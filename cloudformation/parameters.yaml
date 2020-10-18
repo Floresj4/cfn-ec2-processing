@@ -1,0 +1,5 @@
+# parameters used in CFN client call
+- { ParameterKey: 'InstanceImageId', ParameterValue: ''}
+- { ParameterKey: 'InstanceType', ParameterValue: ''}
+- { ParameterKey: 'InstanceKeyPair', ParameterValue: ''}
+- { ParameterKey: 'InstanceSubnetId', ParameterValue: ''}
