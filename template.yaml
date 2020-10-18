@@ -1,0 +1,30 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Launch an EC2 instance for data processing
+
+Parameters:
+    InstanceImageId:
+        Type: AWS::EC2::Image::Id
+        Description: Instance image Id
+        Default: 'ami-0947d2ba12ee1ff75'
+    InstanceType:
+        Type: String
+        Description: Allowed instance types
+        Default: 't2.micro'
+        AllowedValues:
+            - 't2.micro'
+    InstanceKeyPair:
+        Type: AWS::EC2::KeyPair::KeyName
+        Description: SSH KeyPair for the instance
+    InstanceSubnetId:
+        Type: AWS::EC2::Subnet::Id
+        Description: Subnet for the instance
+
+Resources:
+
+    BatchProcessingInstance:
+        Type: AWS::EC2::Instance
+        Properties:
+            ImageId: !Ref InstanceImageId
+            InstanceType: !Ref InstanceType
+            KeyName: !Ref InstanceKeyPair
+            SubnetId: !Ref InstanceSubnetId
