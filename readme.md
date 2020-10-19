@@ -10,6 +10,6 @@ Objectives
 
 Script the launching of Cloudformation through the Python SDK (boto3).  This script allows testing stack creation outside of the AWS Cloudformation Wizard.  This code will ultimately be executed via AWS Lambda or a container in AWS CodePipeline.
 
-### parameters.yml
+### params.yml
 
-Parameters.yaml is a configuration file used with the cloudformation client to substitute values that would have otherwise been manually entered via the AWS Cloudformation Wizard.  This file is loaded from the `./cloudformation` directory.  The list of required parameters is found in the Parameters section of `./cloudformation/template.yml`.
+Params.yml is a configuration file used with the cloudformation client to substitute values that would have otherwise been manually entered via the AWS Cloudformation Wizard.  This file is loaded from the `./cloudformation` directory.  The list of required parameters is found in the Parameters section of `./cloudformation/template.yml`.
