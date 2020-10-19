@@ -18,17 +18,19 @@ Parameters:
     InstanceSubnetId:
         Type: AWS::EC2::Subnet::Id
         Description: Subnet for the instance
+    InstanceName:
+        Type: String
+        Description: The instance name configured as a tag
 
 Resources:
 
     BatchProcessingInstance:
         Type: AWS::EC2::Instance
         Properties:
-            ImageId: 
-                Ref: InstanceImageId
-            InstanceType:
-                Ref: InstanceType
-            KeyName:
-                Ref: InstanceKeyPair
-            SubnetId:
-                Ref: InstanceSubnetId
+            ImageId: !Ref InstanceImageId
+            InstanceType: !Ref InstanceType
+            KeyName: !Ref InstanceKeyPair
+            SubnetId: !Ref InstanceSubnetId
+            Tags:
+                - Key: Name
+                  Value: !Ref InstanceName

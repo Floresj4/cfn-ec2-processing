@@ -44,9 +44,14 @@ try:
     template_body_str = load_template_body(template_body)
     template_parameters = load_parameters(args.template_parameters)
 
+    # append the stack name as the Name tag on the EC2 instance
+    template_parameters.append({
+        'ParameterKey': 'InstanceName',
+        'ParameterValue': stack_name
+    })
+
     logger.debug(f'Stringified template body\n{template_body_str}')
     logger.debug(f'Template parameters\n{template_parameters}')
-
 
     #create a client token for retries, etc.
     client_reqest_token = uuid.uuid4().hex
