@@ -1,4 +1,5 @@
 # parameters used in CFN client call
+# add your own values here
 - { ParameterKey: 'InstanceImageId', ParameterValue: ''}
 - { ParameterKey: 'InstanceType', ParameterValue: ''}
 - { ParameterKey: 'InstanceKeyPair', ParameterValue: ''}
