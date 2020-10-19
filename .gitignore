@@ -1,6 +1,6 @@
 env-*/
 .vscode/
 
-# ignore parameters.yaml to avoid committing
+# ignore parameters.yml to avoid committing
 # account specific details
-cloudformation/parameters.yaml
+parameters.yml
