@@ -3,4 +3,4 @@ env-*/
 
 # ignore parameters.yml to avoid committing
 # account specific details
-parameters.yml
+params.yml
