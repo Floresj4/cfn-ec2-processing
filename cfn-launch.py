@@ -37,27 +37,31 @@ parser.add_argument('--template_body', default = './cloudformation/template.yml'
 parser.add_argument('--template_parameters', default = './cloudformation/params.yml', help = 'The path to the parameters used in the client call.  The AWS CFN Wizard would prompt for these values.')
 args = parser.parse_args()
 
-#collect arguments here
-stack_name = args.stack_name.capitalize()
-template_body = args.template_body
-template_body_str = load_template_body(template_body)
-template_parameters = load_parameters(args.template_parameters)
+try:
+    #collect arguments here
+    stack_name = args.stack_name.capitalize()
+    template_body = args.template_body
+    template_body_str = load_template_body(template_body)
+    template_parameters = load_parameters(args.template_parameters)
 
-logger.debug(f'Stringified template body\n{template_body_str}')
-logger.debug(f'Template parameters\n{template_parameters}')
+    logger.debug(f'Stringified template body\n{template_body_str}')
+    logger.debug(f'Template parameters\n{template_parameters}')
 
 
-#create a client token for retries, etc.
-client_reqest_token = uuid.uuid4().hex
+    #create a client token for retries, etc.
+    client_reqest_token = uuid.uuid4().hex
 
-# initialize CFN client here
-logger.info(f'Creating stack named {stack_name}...')
-cfn = boto3.client('cloudformation')
-stack_response = cfn.create_stack(
-    StackName = stack_name,
-    TemplateBody = template_body_str,
-    Parameters = template_parameters,
-    TimeoutInMinutes = 15,
-    OnFailure = 'DELETE',
-    ClientRequestToken = client_reqest_token
-)
+    # initialize CFN client here
+    logger.info(f'Creating stack named {stack_name}...')
+    cfn = boto3.client('cloudformation')
+    stack_response = cfn.create_stack(
+        StackName = stack_name,
+        TemplateBody = template_body_str,
+        Parameters = template_parameters,
+        TimeoutInMinutes = 15,
+        OnFailure = 'DELETE',
+        ClientRequestToken = client_reqest_token
+    )
+
+except FileNotFoundError as fnfe:
+    logger.fatal(str(fnfe))
