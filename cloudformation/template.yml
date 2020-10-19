@@ -24,7 +24,11 @@ Resources:
     BatchProcessingInstance:
         Type: AWS::EC2::Instance
         Properties:
-            ImageId: !Ref InstanceImageId
-            InstanceType: !Ref InstanceType
-            KeyName: !Ref InstanceKeyPair
-            SubnetId: !Ref InstanceSubnetId
+            ImageId: 
+                Ref: InstanceImageId
+            InstanceType:
+                Ref: InstanceType
+            KeyName:
+                Ref: InstanceKeyPair
+            SubnetId:
+                Ref: InstanceSubnetId
