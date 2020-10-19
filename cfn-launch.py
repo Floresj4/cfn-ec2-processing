@@ -15,15 +15,14 @@ def load_template_body(template_body_path: str):
     # load as string data because AWS !Ref syntax is not standard yaml
     with open(template_body_path, 'r') as yaml_file:
         return ''.join(yaml_file.readlines())
-        # return json.dumps(yaml.load(yaml_file, Loader = yaml.FullLoader))
 
 '''
 Load yaml parameters to be substituted into the template
 via the client call
 '''
-def load_parameters(parameters_path: str):
-    logger.info(f'Loading Cloudformation parameters from {parameters_path}')
-    with open(parameters_path, 'r') as yaml_file:
+def load_parameters(params_path: str):
+    logger.info(f'Loading Cloudformation parameters from {params_path}')
+    with open(params_path, 'r') as yaml_file:
         return yaml.load(yaml_file, Loader = yaml.FullLoader)
 
 # initialize a logger
@@ -35,7 +34,7 @@ logger = logging.getLogger('cfn-logger')
 parser = argparse.ArgumentParser(description = 'Cloudformation launch script')
 parser.add_argument('--stack_name', help = 'The name of the stack being created')
 parser.add_argument('--template_body', default = './cloudformation/template.yml', help = 'The path to the template used in the client call')
-parser.add_argument('--template_parameters', default = './cloudformation/parameters.yml', help = 'The path to the parameters used in the client call.  The AWS CFN Wizard would prompt for these values.')
+parser.add_argument('--template_parameters', default = './cloudformation/params.yml', help = 'The path to the parameters used in the client call.  The AWS CFN Wizard would prompt for these values.')
 args = parser.parse_args()
 
 #collect arguments here
@@ -47,14 +46,14 @@ template_parameters = load_parameters(args.template_parameters)
 logger.debug(f'Stringified template body\n{template_body_str}')
 logger.debug(f'Template parameters\n{template_parameters}')
 
-# initialize CFN client here
-logger.info(f'Creating stack named {stack_name}...')
-cfn = boto3.client('cloudformation')
 
 #create a client token for retries, etc.
 client_reqest_token = uuid.uuid4().hex
 
-cfn.create_stack(
+# initialize CFN client here
+logger.info(f'Creating stack named {stack_name}...')
+cfn = boto3.client('cloudformation')
+stack_response = cfn.create_stack(
     StackName = stack_name,
     TemplateBody = template_body_str,
     Parameters = template_parameters,
