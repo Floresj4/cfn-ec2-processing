@@ -1,5 +1,14 @@
+# python virtual env
 env-*/
+
+# vscode workspace metadata
 .vscode/
+
+# maven/eclipse
+.settings/
+.project
+.classpath
+target/
 
 # ignore parameters.yml to avoid committing
 # account specific details
