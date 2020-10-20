@@ -13,3 +13,11 @@ Script the launching of Cloudformation through the Python SDK (boto3).  This scr
 ### params.yml
 
 Params.yml is a configuration file used with the cloudformation client to substitute values that would have otherwise been manually entered via the AWS Cloudformation Wizard.  This file is loaded from the `./cloudformation` directory.  The list of required parameters is found in the Parameters section of `./cloudformation/template.yml`.
+
+## batch-processor
+
+A Java batch processing project using Spring Batch.
+
+### batch-processor-data
+
+A data file to run through the batch processing project.  This file will be pulled from AWS S3 when the EC2 instance initializes and starts the process.
