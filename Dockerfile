@@ -3,6 +3,7 @@ FROM centos:7
 RUN yum install -y epel-release
 RUN yum install -y python36
 RUN yum install -y python3-pip
+RUN yum install -y zip
 
 ARG WORKSPACE=/usr/share/workspace
 ENV workspace=${WORKSPACE}
