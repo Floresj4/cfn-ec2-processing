@@ -21,3 +21,10 @@ A Java batch processing project using Spring Batch.
 ### batch-processor-data
 
 A data file to run through the batch processing project.  This file will be pulled from AWS S3 when the EC2 instance initializes and starts the process.
+
+
+## Dockerfile
+
+`docker build -t cfn-launch-lambda .`
+
+`docker run -it -v "%CD%":/usr/share/workspace cfn-launch-lambda:latest`
