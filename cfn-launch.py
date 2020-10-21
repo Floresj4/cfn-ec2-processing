@@ -68,5 +68,7 @@ try:
         ClientRequestToken = client_reqest_token
     )
 
+    logger.info(f'Stack creation returned the following response: {stack_response}')
+
 except FileNotFoundError as fnfe:
     logger.fatal(str(fnfe))
