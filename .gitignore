@@ -13,3 +13,7 @@ target/
 # ignore parameters.yml to avoid committing
 # account specific details
 params.yml
+
+# ignore anything going into the lambda/
+# directory, it's strictly for build output
+lambda/
