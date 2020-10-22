@@ -1,7 +1,4 @@
 astroid==2.4.2
-awscli==1.18.159
-boto3==1.15.18
-botocore==1.18.18
 colorama==0.4.3
 docutils==0.15.2
 isort==5.6.4
@@ -13,11 +10,17 @@ pyasn1==0.4.8
 pylint==2.6.0
 python-dateutil==2.8.1
 PyYAML==5.3.1
-rope==0.18.0
 rsa==4.5
-s3transfer==0.3.3
 six==1.15.0
 toml==0.10.1
 typed-ast==1.4.1
 urllib3==1.25.10
 wrapt==1.12.1
+
+# not necessary when deployed to lambda
+# help keep the archive size down
+# awscli==1.18.159
+# boto3==1.15.18
+# botocore==1.18.18
+# s3transfer==0.3.3
+# rope==0.18.0
