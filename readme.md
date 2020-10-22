@@ -27,4 +27,4 @@ A data file to run through the batch processing project.  This file will be pull
 
 `docker build -t cfn-launch-lambda .`
 
-`docker run -it -v "%CD%":/usr/share/workspace cfn-launch-lambda:latest`
+`docker run -v "%CD%":/usr/share/workspace cfn-launch-lambda:latest`
