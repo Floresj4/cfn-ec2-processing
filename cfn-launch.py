@@ -21,7 +21,7 @@ call.  The template.yaml should be tested through the
 wizard to minimize errors encountered through
 the client call
 '''
-def load_template_body(template_body_path: str):
+def get_object_body(template_body_path: str):
     logger.info(f'Loading Cloudformation template from {template_body_path}')
 
     # load as string data because AWS !Ref syntax is not standard yaml
@@ -123,12 +123,14 @@ if __name__ == '__main__':
     try:
         #collect arguments here
         stack_name = args.stack_name.capitalize()
-        template_body = args.template_body
-        template_body_str = load_template_body(template_body)
-        template_parameters = load_parameters(args.template_parameters)
 
+        templ_body = get_object_body(args.template_body)
+
+        templ_params = get_object_body(args.template_parameters)
+        templ_params = yaml.load(templ_params, Loader = yaml.FullLoader)
+        
         # execute the client request to create
-        create_stack(stack_name, template_body_str, template_parameters)
+        stack_response = create_stack(stack_name, templ_body, templ_params)
 
     except FileNotFoundError as fnfe:
         logger.fatal(str(fnfe))
