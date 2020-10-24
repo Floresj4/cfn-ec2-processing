@@ -1,39 +1,19 @@
-import boto3
+import boto3, sys
 import argparse, logging
 import yaml, json
 import uuid
 
 '''
-lambda entrypoint
+initialize logger
 '''
-def lambda_handler(event, context):
-    # there could be multiple records
-    s3 = event['Records'][0]['s3']
-    bucket = s3['bucket']['name']
-    key = s3['object']['key']
+def initialize_logger():
+    FORMAT = '[%(levelname)s]:%(asctime)s %(message)s'
+    logging.basicConfig(format = FORMAT)
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
+    return logger
 
-    # stackname will be the object creating the event
-    idx = key.rfind('/')
-    idx = 0 if idx <= 0 else idx + 1
-    stack_name = key[idx:]
-
-    # get template body from S3
-    s3 = boto3.resource('s3')
-    template_obj = s3.Object('floresj4-cloudformation', 'template.yml')
-    template_body_str = template_obj.get()['Body'].read().decode('utf-8')
-
-    # get template params for S3
-    params_obj = s3.Object('floresj4-cloudformation', 'params.yml')
-    template_parameters = yaml.load(params_obj.get()['Body'].read().decode('utf-8'),
-        Loader = yaml.FullLoader)
-
-    # execute the client request to create
-    stack_response = create_stack(stack_name, template_body_str, template_parameters)
-
-    return {
-        'statusCode': 200,
-        'body': json.dumps(stack_response)
-    }
+logger = initialize_logger()
 
 '''
 load the template body used in the CFN client 
@@ -56,14 +36,6 @@ def load_parameters(params_path: str):
     logger.info(f'Loading Cloudformation parameters from {params_path}')
     with open(params_path, 'r') as yaml_file:
         return yaml.load(yaml_file, Loader = yaml.FullLoader)
-
-'''
-initialize logger
-'''
-def initialize_logger():
-    FORMAT = '[%(levelname)s]:%(asctime)s %(message)s'
-    logging.basicConfig(format = FORMAT, level = logging.DEBUG)
-    return logging.getLogger('cfn-logger')
 
 '''
 initialize a cloudformation client and make a request to
@@ -98,11 +70,42 @@ def create_stack(stack_name: str, template_body: str, template_parameters: []):
     return stack_response
 
 '''
+lambda entrypoint
+'''
+def lambda_handler(event, context):
+
+    # there could be multiple records
+    s3 = event['Records'][0]['s3']
+    bucket = s3['bucket']['name']
+    key = s3['object']['key']
+
+    # stackname will be the object creating the event
+    idx = key.rfind('/')
+    idx = 0 if idx <= 0 else idx + 1
+    stack_name = key[idx:]
+
+    # get template body from S3
+    s3 = boto3.resource('s3')
+    template_obj = s3.Object('floresj4-cloudformation', 'template.yml')
+    template_body_str = template_obj.get()['Body'].read().decode('utf-8')
+
+    # get template params for S3
+    params_obj = s3.Object('floresj4-cloudformation', 'params.yml')
+    template_parameters = yaml.load(params_obj.get()['Body'].read().decode('utf-8'),
+        Loader = yaml.FullLoader)
+
+    # execute the client request to create
+    stack_response = create_stack(stack_name, template_body_str, template_parameters)
+
+    return {
+        'statusCode': 200,
+        'body': json.dumps(stack_response)
+    }
+
+'''
 main - local testing and development
 '''
 if __name__ == '__main__':
-
-    logger = initialize_logger()
 
     # setup arguments for the script
     parser = argparse.ArgumentParser(description = 'Cloudformation launch script')
