@@ -1,4 +1,4 @@
-import boto3, sys
+import boto3, sys, os
 import argparse, logging
 import yaml, json
 import uuid
@@ -10,7 +10,7 @@ def initialize_logger():
     FORMAT = '[%(levelname)s]:%(asctime)s %(message)s'
     logging.basicConfig(format = FORMAT)
     logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(os.getenv('LOGGING_LEVEL', 'INFO'))
     return logger
 
 logger = initialize_logger()
@@ -48,7 +48,7 @@ def create_stack(stack_name: str, template_body: str, template_parameters: []):
         'ParameterValue': stack_name
     })
 
-    logger.debug(f'Stringified template body\n{template_body_str}')
+    logger.debug(f'Stringified template body\n{template_body}')
     logger.debug(f'Template parameters\n{template_parameters}')
 
     #create a client token for retries, etc.
@@ -59,7 +59,7 @@ def create_stack(stack_name: str, template_body: str, template_parameters: []):
     cfn = boto3.resource('cloudformation')
     stack_response = cfn.create_stack(
         StackName = stack_name,
-        TemplateBody = template_body_str,
+        TemplateBody = template_body,
         Parameters = template_parameters,
         TimeoutInMinutes = 15,
         OnFailure = 'DELETE',
@@ -68,6 +68,14 @@ def create_stack(stack_name: str, template_body: str, template_parameters: []):
 
     logger.info(f'Stack creation returned the following response: {stack_response}')
     return stack_response
+
+'''
+Get the body of an object stored in S3.  Uniformly log the event.
+'''
+def get_s3_object_body(s3, bucket: str, prefix: str):
+    logger.debug(f'Retrieving S3 object body from {bucket}/{prefix}')
+    obj = s3.Object(bucket, prefix)
+    return obj.get()['Body'].read().decode('utf-8')
 
 '''
 lambda entrypoint
@@ -86,13 +94,11 @@ def lambda_handler(event, context):
 
     # get template body from S3
     s3 = boto3.resource('s3')
-    template_obj = s3.Object('floresj4-cloudformation', 'template.yml')
-    template_body_str = template_obj.get()['Body'].read().decode('utf-8')
+    template_body_str = get_s3_object_body(s3, 'floresj4-cloudformation', 'template.yml')
 
     # get template params for S3
-    params_obj = s3.Object('floresj4-cloudformation', 'params.yml')
-    template_parameters = yaml.load(params_obj.get()['Body'].read().decode('utf-8'),
-        Loader = yaml.FullLoader)
+    params_str = get_s3_object_body(s3, 'floresj4-cloudformation', 'params.yml')
+    template_parameters = yaml.load(params_str, Loader = yaml.FullLoader)
 
     # execute the client request to create
     stack_response = create_stack(stack_name, template_body_str, template_parameters)
