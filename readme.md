@@ -8,11 +8,20 @@ Objectives
 
 ## cfn-launch.py
 
-Script the launching of Cloudformation through the Python SDK (boto3).  This script allows testing stack creation outside of the AWS Cloudformation Wizard.  This code will ultimately be executed via AWS Lambda or a container in AWS CodePipeline.
+Script the launching of Cloudformation through the Python SDK (boto3).  Contains entrypoint for local development testing and AWS Lambda event handler
+
+### cfn.py
+
+The Python module containing utility functions supporting cfn_launch.py
+
+### cloudformation/
+
+Contains the local testing and development cloudformation templates.  For Lambda execution the contents of these file must exist in a combination of S3 or Parameter Store.
 
 ### params.yml
 
 Params.yml is a configuration file used with the cloudformation client to substitute values that would have otherwise been manually entered via the AWS Cloudformation Wizard.  This file is loaded from the `./cloudformation` directory.  The list of required parameters is found in the Parameters section of `./cloudformation/template.yml`.
+
 
 ## batch-processor
 
@@ -36,3 +45,7 @@ The cfn-launch-lambda container is intended to bind mount the root directory and
 The `-v` option binds the current directory to `/usr/share/workspace` to pip install all required dependencies.  The workspace/ directory matches the WORKSPACE argument in Dockerfile.
 
 `docker run -v "%CD%":/usr/share/workspace cfn-launch-lambda:latest`
+
+### lambda/cfn-launch.sh
+
+The shell script used as the container ENTRYPOINT to `pip install` requirements and create the .zip deployment.
