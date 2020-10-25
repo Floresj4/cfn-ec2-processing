@@ -25,6 +25,14 @@ A data file to run through the batch processing project.  This file will be pull
 
 ## Dockerfile
 
+Dockerfile is used to create the lambda deployment archive.  AWS Lambda runs on Linux and there are scenarios where a deployment created on a Windows machine will not run on Linux &ndash; pyopenssl and cryptography at least.
+
+The docker build command will create and tag a container from the current directory.
+
 `docker build -t cfn-launch-lambda .`
+
+The cfn-launch-lambda container is intended to bind mount the root directory and output the .zip deployment to lambda-out/.  Bind mount allows the archive to be recreated without rebuilding the container image.
+
+The `-v` option binds the current directory to `/usr/share/workspace` to pip install all required dependencies.  The workspace/ directory matches the WORKSPACE argument in Dockerfile.
 
 `docker run -v "%CD%":/usr/share/workspace cfn-launch-lambda:latest`
