@@ -21,8 +21,22 @@ Parameters:
     InstanceName:
         Type: String
         Description: The instance name configured as a tag
+    VPC:
+        Type: String
+        Description: Deployment VPC
 
 Resources:
+
+    SshSecurityGroup:
+        Type: AWS::EC2::SecurityGroup
+        Properties:
+            GroupDescription: Simple SSH security group
+            SecurityGroupIngress:
+                CidrIp: 0.0.0.0/0
+                IpProtocol: tcp
+                ToPort: 22
+                FromPort: 22
+            VpcId: !Ref VPC
 
     BatchProcessingInstance:
         Type: AWS::EC2::Instance
@@ -31,6 +45,8 @@ Resources:
             InstanceType: !Ref InstanceType
             KeyName: !Ref InstanceKeyPair
             SubnetId: !Ref InstanceSubnetId
+            SecurityGroupIds:
+                - !Ref SshSecurityGroup
             Tags:
                 - Key: Name
                   Value: !Ref InstanceName
