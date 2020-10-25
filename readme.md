@@ -2,7 +2,7 @@
 
 An exploratory project to launch an EC2 instance and begin a batch processing job based on some trigger event.
 
-[changes.md](./change.md)
+[change.md](./change.md) describes the current state of the project.
 
 Objectives
  - A new release of the batch component will trigger processing
