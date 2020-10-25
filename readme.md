@@ -2,6 +2,8 @@
 
 An exploratory project to launch an EC2 instance and begin a batch processing job based on some trigger event.
 
+[changes.md](./change.md)
+
 Objectives
  - A new release of the batch component will trigger processing
  - Options to the processing event can be externalized and easily mananged between events
