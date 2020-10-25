@@ -10,6 +10,9 @@ env-*/
 .classpath
 target/
 
+# python cache
+__pycache__/
+
 # ignore parameters.yml to avoid committing
 # account specific details
 params.yml
