@@ -5,7 +5,7 @@ import uuid
 
 import cfn
 
-logger = None
+logger = cfn.initialize_logger()
 
 '''
 lambda entrypoint
@@ -31,11 +31,15 @@ def lambda_handler(event, context):
     template_parameters = yaml.load(params_str, Loader = yaml.FullLoader)
 
     # execute the client request to create
-    stack_response = cfn.create_stack(stack_name, template_body_str, template_parameters)
+    resp = cfn.create_stack(stack_name, template_body_str, template_parameters)
 
     return {
         'statusCode': 200,
-        'body': json.dumps(stack_response)
+        'body': json.dumps({
+            'stack_status': resp.stack_status,
+            'stack_status_reason': resp.stack_status_reason,
+            'creation_time': resp.creation_time.strftime("%m/%d/%Y, %H:%M:%S")
+        })
     }
 
 '''
@@ -59,7 +63,11 @@ if __name__ == '__main__':
         templ_params = cfn.get_object_as_yaml(args.template_parameters)
         
         # execute the client request to create
-        stack_response = cfn.create_stack(stack_name, templ_body, templ_params)
-
+        resp = cfn.create_stack(stack_name, templ_body, templ_params)
+        logger.debug({
+            'stack_status': resp.stack_status,
+            'stack_status_reason': resp.stack_status_reason,
+            'creation_time': resp.creation_time.strftime("%m/%d/%Y, %H:%M:%S")
+        })
     except FileNotFoundError as fnfe:
         logger.fatal(str(fnfe))

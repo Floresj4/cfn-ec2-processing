@@ -2,10 +2,6 @@ import sys, os, uuid
 import yaml, boto3
 import logging
 
-sys.path.append('.')
-
-from cfn_launch import logger
-
 '''
 initialize logger
 '''
