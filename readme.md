@@ -6,13 +6,9 @@ Objectives
  - A new release of the batch component will trigger processing
  - Options to the processing event can be externalized and easily mananged between events
 
-## cfn-launch.py
-
-Script the launching of Cloudformation through the Python SDK (boto3).  Contains entrypoint for local development testing and AWS Lambda event handler
-
-### cfn.py
-
-The Python module containing utility functions supporting cfn_launch.py
+## Folders
+[lambda](./lambda/lambda.md) - the lambda function initiating the stack creation event.
+[batch-processor](./batch-processor/batch.md)
 
 ### cloudformation/
 
