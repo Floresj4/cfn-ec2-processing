@@ -8,7 +8,7 @@ Objectives
 
 ## Folders
 [lambda](./lambda/lambda.md) - the lambda function initiating the stack creation event.
-[batch-processor](./batch-processor/batch.md)
+[batch-processor](./batch-processor/batch.md) - the java project to perform processing on the EC2 instance
 
 ### cloudformation/
 
