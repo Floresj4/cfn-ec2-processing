@@ -6,6 +6,8 @@ Objectives
  - A new release of the batch component will trigger processing
  - Options to the processing event can be externalized and easily mananged between events
 
+Change information can be found [here](./changes.md).
+
 ## Folders
 [lambda](./lambda/lambda.md) - the lambda function initiating the stack creation event.
 
