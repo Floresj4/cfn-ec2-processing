@@ -24,4 +24,4 @@ The Python module containing utility functions supporting cfn_launch.py
 
 ### TODO
 
-- TODO use moto to mock test create_stack
+- TODO research `moto` to mock test create_stack
