@@ -28,6 +28,12 @@ class TestCfn(unittest.TestCase):
         stack_name = cfn.stack_name_from_prefix('project-0.1.1.jar')
         self.assertEqual('project-011', stack_name)
 
+        stack_name = cfn.stack_name_from_prefix('some/prefix/project-1.1.1.jar')
+        self.assertEqual('project-111', stack_name)
+
+        stack_name = cfn.stack_name_from_prefix('/project-1.1.2.jar')
+        self.assertEqual('project-112', stack_name)
+
     '''
     load the template body used in the CFN client 
     call.  The template.yaml should be tested through the
