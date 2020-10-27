@@ -17,9 +17,7 @@ def lambda_handler(event, context):
     bucket, key = cfn.get_event_info(event)
 
     # stackname will be the object creating the event
-    idx = key.rfind('/')
-    idx = 0 if idx <= 0 else idx + 1
-    stack_name = key[idx:]
+    stack_name = cfn.stack_name_from_prefix(key)
 
     # get template body from S3
     s3 = boto3.resource('s3')

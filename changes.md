@@ -5,6 +5,7 @@
 - add `/lambda/test`.  only a couple of tests for now.  in progress...
 - moved data for batch into `batch-processor/`
 - updated `cfn-launch.sh` to build from `src/` to `build/`
+- fixed stacK name errors associated with S3 event key/prefix
 
 ### 0.0.2
 - ssh securty group on created ec2 instance

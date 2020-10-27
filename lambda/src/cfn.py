@@ -32,7 +32,9 @@ For now, handle a maven, semantic versioned, jar
 def stack_name_from_prefix(prefix: str):
     
     if prefix.endswith('.jar'):
-        return prefix[0 : -4].replace('.', '')
+        last_slash = prefix.rfind('/')
+        i = 0 if last_slash < 0 else last_slash + 1
+        return prefix[i : -4].replace('.', '')
 
     return None
 
