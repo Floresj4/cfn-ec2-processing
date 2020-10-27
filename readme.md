@@ -27,11 +27,6 @@ params.yml is intentional excluded. See [/API_Parameter.html](https://docs.aws.a
 
 A Java batch processing project using Spring Batch.
 
-### batch-processor-data
-
-A data file to run through the batch processing project.  This file will be pulled from AWS S3 when the EC2 instance initializes and starts the process.
-
-
 ## Dockerfile
 
 Dockerfile is used to create the lambda deployment archive.  AWS Lambda runs on Linux and there are scenarios where a deployment created on a Windows machine will not run on Linux &ndash; pyopenssl and cryptography at least.
@@ -45,7 +40,3 @@ The cfn-launch-lambda container is intended to bind mount the root directory and
 The `-v` option binds the current directory to `/usr/share/workspace` to pip install all required dependencies.  The workspace/ directory matches the WORKSPACE argument in Dockerfile.
 
 `docker run -v "%CD%":/usr/share/workspace cfn-launch-lambda:latest`
-
-### lambda/cfn-launch.sh
-
-The shell script used as the container ENTRYPOINT to `pip install` requirements and create the .zip deployment.
