@@ -14,11 +14,17 @@ The
 
 Script the launching of Cloudformation through the Python SDK (boto3).  Contains entrypoint for local development testing and AWS Lambda event handler
 
-### `cfn.py`
+### cfn-launch.sh
 
-The Python module containing utility functions supporting cfn_launch.py
+The shell script used as the container ENTRYPOINT to `pip install` requirements and create the .zip deployment.
+
+### `src/`
+
+Source files for local development and lambda.
 
 ### `test/`
+
+Unit tests against `src/`
 
 ### `build/`
 
