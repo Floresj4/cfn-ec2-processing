@@ -1,5 +1,11 @@
 # Changes
 
+### 0.0.3
+- restructured `/lambda` for unit test with pytest.  removed lambda-out/ and lambda-build/.  Everything happens in the lambda/ directory.
+- add `/lambda/test`.  only a couple of tests for now.  in progress...
+- moved data for batch into `batch-processor/`
+- updated `cfn-launch.sh` to build from `src/` to `build/`
+
 ### 0.0.2
 - ssh securty group on created ec2 instance
 - restructured `cfn_launch.py` adding `cfn.py` to hold cloudformation functions
