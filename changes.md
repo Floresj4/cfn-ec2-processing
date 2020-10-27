@@ -1,6 +1,7 @@
 # Changes
 
 ### 0.0.3
+- :trophy: completed testing of stack deployment from lambda event.  manually added EIP to puTTY onto the instance and confirm
 - restructured `/lambda` for unit test with pytest.  removed lambda-out/ and lambda-build/.  Everything happens in the lambda/ directory.
 - add `/lambda/test`.  only a couple of tests for now.  in progress...
 - moved data for batch into `batch-processor/`
