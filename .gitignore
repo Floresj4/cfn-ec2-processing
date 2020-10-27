@@ -12,6 +12,7 @@ target/
 
 # python cache
 __pycache__/
+.pytest_cache
 
 # ignore parameters.yml to avoid committing
 # account specific details

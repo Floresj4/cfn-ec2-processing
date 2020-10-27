@@ -7,15 +7,14 @@ import cfn
 
 logger = cfn.initialize_logger()
 
+
 '''
 lambda entrypoint
 '''
 def lambda_handler(event, context):
 
     # there could be multiple records
-    s3 = event['Records'][0]['s3']
-    bucket = s3['bucket']['name']
-    key = s3['object']['key']
+    bucket, key = cfn.get_event_info(event)
 
     # stackname will be the object creating the event
     idx = key.rfind('/')

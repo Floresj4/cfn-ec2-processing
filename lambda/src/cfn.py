@@ -16,6 +16,27 @@ logger = initialize_logger(__name__)
 
 
 '''
+get relevant event info
+'''
+def  get_event_info(event):
+    s3 = event['Records'][0]['s3']
+    bucket = s3['bucket']['name']
+    key = s3['object']['key']
+
+    return bucket, key
+
+
+'''
+For now, handle a maven, semantic versioned, jar
+'''
+def stack_name_from_prefix(prefix: str):
+    
+    if prefix.endswith('.jar'):
+        return prefix[0 : -4].replace('.', '')
+
+    return None
+
+'''
 load the template body used in the CFN client 
 call.  The template.yaml should be tested through the
 wizard to minimize errors encountered through
