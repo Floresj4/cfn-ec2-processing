@@ -9,11 +9,11 @@ Objectives
 Change information can be found [here](./changes.md).
 
 ## Folders
-[lambda/](./lambda/readme.md) - the lambda function initiating the stack creation event.
+[lambda/](./lambda/) - the lambda function initiating the stack creation event.
 
-[batch-processor/](./batch-processor/readme.md) - the java project to perform processing on the EC2 instance
+[batch-processor/](./batch-processor/) - the java project to perform processing on the EC2 instance
 
-[cloudformation/](./cloudformation/readme.md) - contains cloudformation templates
+[cloudformation/](./cloudformation/) - contains cloudformation templates
 
 ## Dockerfile
 
