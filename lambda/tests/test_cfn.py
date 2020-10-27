@@ -19,6 +19,7 @@ class TestCfn(unittest.TestCase):
             self.assertEqual('test/key', key)
 
     '''
+    handle a maven, semantic versioned, jar 
     '''
     def test_adjust_stack_name(self):
         stack_name = cfn.stack_name_from_prefix('spring-batch-0.0.1-SNAPSHOT.jar')
