@@ -1,5 +1,8 @@
 # Changes
 
+### 0.0.4
+- EC2 can pull the proper resources from S3
+
 ### 0.0.3
 - :trophy: completed testing of stack deployment from lambda event.  manually added EIP to puTTY onto the instance and confirm
 - restructured `/lambda` for unit test with pytest.  removed lambda-out/ and lambda-build/.  Everything happens in the lambda/ directory.
