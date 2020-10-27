@@ -13,30 +13,20 @@ Change information can be found [here](./changes.md).
 
 [batch-processor](./batch-processor/batch.md) - the java project to perform processing on the EC2 instance
 
-### cloudformation/
-
-Contains the local testing and development cloudformation templates.  For Lambda execution the contents of these file must exist in a combination of S3 or Parameter Store.
-
-### params.yml
-
-Params.yml is a configuration file used with the cloudformation client to substitute values that would have otherwise been manually entered via the AWS Cloudformation Wizard.  This file is loaded from the `./cloudformation` directory.  The list of required parameters is found in the Parameters section of `./cloudformation/template.yml`.
-
-params.yml is intentional excluded. See [/API_Parameter.html](https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_Parameter.html) for more details
-
-## batch-processor
-
-A Java batch processing project using Spring Batch.
+[cloudformation/](./cloudformation/cloudform.md) - contains cloudformation templates
 
 ## Dockerfile
 
-Dockerfile is used to create the lambda deployment archive.  AWS Lambda runs on Linux and there are scenarios where a deployment created on a Windows machine will not run on Linux &ndash; pyopenssl and cryptography at least.
+Dockerfile is used to create the lambda deployment archive.  AWS Lambda runs on Linux and there are some scenarios where a deployment created on a Windows machine will not run on Linux &ndash; pyopenssl and cryptography to name a few.
 
-The docker build command will create and tag a container from the current directory.
+The docker build command will create and tag a container.  This command is intended to be run from the project root.
 
 `docker build -t cfn-launch-lambda .`
 
-The cfn-launch-lambda container is intended to bind mount the root directory and output the .zip deployment to lambda-out/.  Bind mount allows the archive to be recreated without rebuilding the container image.
+The `cfn-launch-lambda container` is intended to bind mount the root directory and output the .zip deployment to lambda/build/.  Bind mount allows the archive to be recreated without rebuilding the container image.
 
-The `-v` option binds the current directory to `/usr/share/workspace` to pip install all required dependencies.  The workspace/ directory matches the WORKSPACE argument in Dockerfile.
+The `-v` option binds the current directory to `/usr/share/workspace` on the container.  The container ENTRYPOINT will install and package requirements for the deployment archive.
+
+The command below will run the build container to produce the archive.
 
 `docker run -v "%CD%":/usr/share/workspace cfn-launch-lambda:latest`
