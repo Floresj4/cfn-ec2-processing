@@ -12,7 +12,7 @@ def initialize_logger(name: str = __name__):
     logger.setLevel(os.getenv('LOGGING_LEVEL', 'INFO'))
     return logger
 
-logger = initialize_logger(__name__)
+logger = initialize_logger()
 
 
 '''
@@ -99,6 +99,10 @@ def create_stack(stack_name: str, template_body: str, template_parameters: []):
         Parameters = template_parameters,
         TimeoutInMinutes = 15,
         OnFailure = 'DELETE',
+        Capabilities = [
+            'CAPABILITY_IAM',
+            'CAPABILITY_NAMED_IAM'
+        ],
         ClientRequestToken = client_reqest_token
     )
 
