@@ -26,6 +26,7 @@ Parameters:
         Description: Deployment VPC
 
 # TODO roles and policies should not be defined here
+# TODO fine-tune policies
 
 Resources:
 
