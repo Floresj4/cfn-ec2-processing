@@ -1,14 +1,27 @@
 ## lambda/
 
-A python AWS Lambda function triggered from a S3 object creation event.
+AWS Lambda function written in python.  Local development and deployment environment.
 
-Developing in a virtual environment is always a good idea.  
+### Virtual Environment
 
-`python -m venv .\env-37` will create a virtual environment to avoid overwriting dependencies on your local python installation
+Using virtual environments for Python development avoid modify packages associated with the native installation.  Requirement files can be shared and environments can be quickly torn down and rebuilt with a few simple commands.
 
-`env-*/` is listed in the root .gitignore
+1. Initialize
+    
+    `python -m venv .\env-37` will create a virtual environment
 
-The 
+2. Activate
+
+    `.\env-37\Scripts\activate` will active the environment.  `deactivate` from any location while in the (venv) terminal will terminate the environment session.
+
+    Data persists through the `.\env-` and thus should not be checked it.
+
+3. Install
+
+    `pip install -r requirements-local.txt`  requirements-local.txt includes dependencies for unit testing and IDE integration.  The archive build will use requirements.txt
+
+
+### Local development
 
 ### `cfn-launch.py`
 
