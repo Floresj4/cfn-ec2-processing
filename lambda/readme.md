@@ -20,27 +20,37 @@ Using virtual environments for Python development avoid modify packages associat
 
     `pip install -r requirements-local.txt`  requirements-local.txt includes dependencies for unit testing and IDE integration.  The archive build will use requirements.txt
 
+### Build &amp; Deploy
 
-### Local development
+#### cfn-launch.sh
 
-### `cfn-launch.py`
+Shell script used as the container ENTRYPOINT to `pip install` requirements and create the .zip deployment. See [Dockerfile](./Dockerfile)
 
-Script the launching of Cloudformation through the Python SDK (boto3).  Contains entrypoint for local development testing and AWS Lambda event handler
+#### `src/`
 
-### cfn-launch.sh
+##### `cfn-launch.py`
 
-The shell script used as the container ENTRYPOINT to `pip install` requirements and create the .zip deployment.
+Script to launch of Cloudformation using Python SDK (boto3).  Contains entrypoint for local development testing and AWS Lambda event handler
 
-### `src/`
+- local development makes use of argparse.  `argparse -h` will detail program arguments.  E.g.,
 
-Source files for local development and lambda.
+    `py .\lambda\src\cfn_launch.pr my-stack-name`
 
-### `test/`
+- The lambda_handler function is here as well.
+
+##### `cfn.py`
+
+A module containing functions to support cfn_launch.py
+
+#### `test/`
 
 Unit tests against `src/`
 
-### `build/`
+#### `build/`
 
-### TODO
+The output directory when the builder container completes.
 
-- TODO research `moto` to mock test create_stack
+
+##### TODO
+
+- `moto` to mock test create_stack
