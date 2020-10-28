@@ -1,6 +1,7 @@
 # Changes
 
 ### 0.0.4
+- Attach IAM Role to instance
 - EC2 can pull the proper resources from S3
 
 ### 0.0.3

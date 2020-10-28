@@ -38,6 +38,35 @@ Resources:
                 FromPort: 22
             VpcId: !Ref VPC
 
+    S3AccessRole:
+        Type: AWS::IAM::Role
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: 2012-10-17
+                Statement:
+                  - Effect: Allow
+                    Principal:
+                        Service: 
+                          - ec2.amazonaws.com
+                    Action:
+                      - 'sts:AssumeRole'
+            Path: /
+            Policies:
+              - PolicyName: S3AccessPolicy
+                PolicyDocument:
+                    Version: 2012-10-17
+                    Statement:
+                      - Effect: Allow
+                        Action: 's3:*'
+                        Resource: '*'
+
+    BatchProcessingInstanceProfile:
+        Type: AWS::IAM::InstanceProfile
+        Properties:
+            Path: /
+            Roles:
+                - !Ref S3AccessRole
+
     BatchProcessingInstance:
         Type: AWS::EC2::Instance
         Properties:
@@ -47,6 +76,7 @@ Resources:
             SubnetId: !Ref InstanceSubnetId
             SecurityGroupIds:
                 - !Ref SshSecurityGroup
+            IamInstanceProfile: !Ref BatchProcessingInstanceProfile
             Tags:
                 - Key: Name
                   Value: !Ref InstanceName
