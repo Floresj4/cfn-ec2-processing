@@ -25,6 +25,8 @@ Parameters:
         Type: String
         Description: Deployment VPC
 
+# TODO roles and policies should not be defined here
+
 Resources:
 
     SshSecurityGroup:
@@ -57,8 +59,14 @@ Resources:
                     Version: 2012-10-17
                     Statement:
                       - Effect: Allow
-                        Action: 's3:*'
-                        Resource: '*'
+                        Action:
+                          - s3:ListBucketMultipartUploads
+                          - s3:ListBucketVersions
+                          - s3:ListBucket
+                          - s3:ListMultipartUploadParts
+                        Resource:
+                          - arn:aws:s3:::floresj4-cfn-ec2-processing
+                          - arn:aws:s3:::*/*
 
     BatchProcessingInstanceProfile:
         Type: AWS::IAM::InstanceProfile
