@@ -36,11 +36,11 @@ Script to launch of Cloudformation using Python SDK (boto3).  Contains entrypoin
 
     `py .\lambda\src\cfn_launch.py -h`
 
-    cfn_launch.py takes positional argument used as the stack name during local development.  E.g.,
+    cfn_launch.py takes on positional argument required for the stack name during local development.  E.g.,
 
     `py .\lambda\src\cfn_launch.py my-stack-name`
 
-- The lambda_handler function is here as well.
+- The lambda_handler function is here as well.  The lambda handler will use the S3 object event prefix as the stack name.
 
 ##### `cfn.py`
 
