@@ -52,6 +52,8 @@ Testcases are created with the intent of being executed from the root directory.
 
 The output directory when the builder container completes.
 
+The [Dockerfile](../) section on the main page describes the build process.
+
 
 ##### TODO
 
