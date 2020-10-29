@@ -24,7 +24,7 @@ Using virtual environments for Python development avoid modify packages associat
 
 #### cfn-launch.sh
 
-Shell script used as the container ENTRYPOINT to `pip install` requirements and create the .zip deployment. See [Dockerfile](./Dockerfile)
+Shell script used as the container ENTRYPOINT to `pip install` requirements and create the .zip deployment. See [Dockerfile](../Dockerfile)
 
 #### `src/`
 
@@ -42,9 +42,11 @@ Script to launch of Cloudformation using Python SDK (boto3).  Contains entrypoin
 
 A module containing functions to support cfn_launch.py
 
-#### `test/`
+#### `tests/`
 
-Unit tests against `src/`
+Unit tests against `src/`.
+
+Testcases are created with the intent of being executed from the root directory.  Running `pytest` will scan for available tests and execute.
 
 #### `build/`
 
