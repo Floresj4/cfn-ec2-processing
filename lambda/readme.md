@@ -34,7 +34,11 @@ Script to launch of Cloudformation using Python SDK (boto3).  Contains entrypoin
 
 - local development makes use of argparse.  `argparse -h` will detail program arguments.  E.g.,
 
-    `py .\lambda\src\cfn_launch.pr my-stack-name`
+    `py .\lambda\src\cfn_launch.py -h`
+
+    cfn_launch.py takes positional argument used as the stack name during local development.  E.g.,
+
+    `py .\lambda\src\cfn_launch.py my-stack-name`
 
 - The lambda_handler function is here as well.
 
