@@ -23,6 +23,7 @@ def  get_event_info(event):
     bucket = s3['bucket']['name']
     key = s3['object']['key']
 
+    logger.info(f'Pulled bucket ({bucket}) and key ({key}) from object event')
     return bucket, key
 
 
@@ -30,13 +31,15 @@ def  get_event_info(event):
 For now, handle a maven, semantic versioned, jar
 '''
 def stack_name_from_prefix(prefix: str):
-    
+    stack_name = prefix
+
     if prefix.endswith('.jar'):
         last_slash = prefix.rfind('/')
         i = 0 if last_slash < 0 else last_slash + 1
-        return prefix[i : -4].replace('.', '')
+        stack_name = prefix[i : -4].replace('.', '')
 
-    return None
+    logger.info(f'Stack name from prefix as {stack_name}')
+    return stack_name
 
 '''
 load the template body used in the CFN client 
