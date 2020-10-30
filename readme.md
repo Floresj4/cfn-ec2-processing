@@ -8,6 +8,8 @@ Objectives
 
 Change information can be found [here](./changes.md).
 
+![Work in progress](cfn-launch.png)
+
 ## Folders
 [lambda/](./lambda/) - the lambda function initiating the stack creation event.
 
