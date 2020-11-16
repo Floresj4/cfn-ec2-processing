@@ -8,6 +8,11 @@ Objectives
 
 Change information can be found [here](./changes.md).
 
+##### TODO
+
+- `moto` to mock test create_stack
+- remove role creation from cloudformation template
+
 ## Folders
 [lambda/](./lambda/) - the lambda function initiating the stack creation event.
 
