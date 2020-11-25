@@ -15,11 +15,9 @@ import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.lang.NonNull;
 
 import com.flores.development.springbatch.component.JobCompletionNotificationListener;
 import com.flores.development.springbatch.model.Person;
@@ -29,10 +27,9 @@ import com.flores.development.springbatch.processor.PersonItemProcessor;
 @EnableBatchProcessing
 public class BatchConfig {
 
-	@NonNull
-	@Value("${datafile-path}")
-	private String datafilePath;
-	
+	@Autowired
+	private BatchConfigProperties batchProperties;
+
 	@Autowired
 	public JobBuilderFactory jobBuilderFactory;
 	
@@ -41,9 +38,10 @@ public class BatchConfig {
 	
 	@Bean
 	public FlatFileItemReader<Person> reader() {
+		final String datafilePath = batchProperties.getDatafilePath();
 		return new FlatFileItemReaderBuilder<Person>()
-				.name("personItemReader")
 				.resource(new FileSystemResource(datafilePath))
+				.name("personItemReader")
 				.delimited()
 				.names(new String[] {"firstName", "lastName"})
 				.fieldSetMapper(new BeanWrapperFieldSetMapper<Person>() {{
@@ -78,8 +76,9 @@ public class BatchConfig {
 	
 	@Bean
 	public Step step1(JdbcBatchItemWriter<Person> writer) {
+		final int chunkSize = batchProperties.getChunkSize();
 		return stepBuilderFactory.get("step1")
-				.<Person, Person>chunk(10)
+				.<Person, Person>chunk(chunkSize)
 				.reader(reader())
 				.processor(processor())
 				.writer(writer)
