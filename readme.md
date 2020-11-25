@@ -14,11 +14,13 @@ Change information can be found [here](./changes.md).
 - remove role creation from cloudformation template
 
 ## Folders
-[lambda/](./lambda/) - the lambda function initiating the stack creation event.
+[batch-init](./batch-init/) - the processing launch script
 
 [batch-processor/](./batch-processor/) - the java project to perform processing on the EC2 instance
 
 [cloudformation/](./cloudformation/) - contains cloudformation templates
+
+[lambda/](./lambda/) - the lambda function initiating the stack creation event.
 
 ## Dockerfile
 
