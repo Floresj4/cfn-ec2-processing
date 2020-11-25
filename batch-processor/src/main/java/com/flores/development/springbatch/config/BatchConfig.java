@@ -30,7 +30,7 @@ import com.flores.development.springbatch.processor.PersonItemProcessor;
 public class BatchConfig {
 
 	@NonNull
-	@Value("${datafile.path}")
+	@Value("${datafile-path}")
 	private String datafilePath;
 	
 	@Autowired
