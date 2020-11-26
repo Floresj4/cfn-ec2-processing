@@ -6,3 +6,4 @@ Initialize & start the batch processing application.  This script can be execute
 
 ### batch-config
 
+Deploys the configuration properties required for the batch-processor application. 
