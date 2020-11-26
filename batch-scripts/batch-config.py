@@ -2,6 +2,7 @@ import boto3
 import logging, os
 import argparse
 
+from botocore.config import Config
 from jproperties import Properties
 
 '''
@@ -24,9 +25,28 @@ def deploy_configuration(props: Properties, nmspce: str):
     # add prefix slash if necessary
     nmspce = nmspce if nmspce[0] == '/' else '/' + nmspce
 
-    for k,v in props.items():
+    ssm = boto3.client('ssm', config = Config(
+        retries = {
+            'max_attempts': 5
+        }
+    ))
+
+    for k in props.keys():
+        # create complete path and upload
         param_path = f'{nmspce}/{k}'
-        logger.debug(f'Uploading param by path -> {param_path}')
+
+        response = ssm.put_parameter(
+            Name = param_path,
+            Value = props[k].data,
+            Type = 'String',
+            Overwrite = True
+        )
+
+        if not response:
+            raise AwsPutParameterError(f'response returned {response}')
+
+        logger.debug('Parameter {} version {} upload complete'.
+            format(param_path, response['Version']))
 
 '''
 load arguments required by application
@@ -50,9 +70,14 @@ def load_properties(args):
     logger.info(f'{dashes}Properties loaded successfully.{dashes}')
     for k, v in props.items():
         logger.info(f'{k} = {v}')
-    logger.info(dashes * 2)
+    logger.info(dashes*5)
 
     return props
+
+
+class AwsPutParameterError(Exception):
+    pass
+
 
 '''
 If the batch application uses a local configuration file, take
@@ -74,5 +99,4 @@ if __name__ == '__main__':
         logger.info('Migration completed successfully.')
 
     except Exception as e:
-        print(e)
         logger.error(str(e))
