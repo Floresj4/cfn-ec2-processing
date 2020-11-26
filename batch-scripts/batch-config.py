@@ -17,6 +17,14 @@ def initialize_logger(name: str = __name__):
 logger = initialize_logger()
 
 '''
+load arguments required by application
+'''
+def init_arguments():
+    parser = argparse.ArgumentParser(description = 'Migrate Configuration')
+    parser.add_argument('filepath', help = 'Properties file to upload.')
+    return parser.parse_args()
+
+'''
 load from properties file to Amazon Web Services
 '''
 def load_properties(args):
@@ -39,14 +47,11 @@ be recreated during provisioning or arguments can be assembled
 for commandline usage.
 '''
 if __name__ == '__main__':
-    logger.info('Migrating configuration...')
-
-    parser = argparse.ArgumentParser(description = 'Migrate Configuration')
-    parser.add_argument('filepath', help = 'Properties file to upload.')
-    args = parser.parse_args()
 
     try:
-
+        logger.info('Migrating configuration...')
+        
+        args = init_arguments()
         properties = load_properties(args)
 
         logger.info('Migration completed successfully.')
