@@ -1,5 +1,8 @@
-import boto3
 import logging, os
+import argparse
+import boto3, uuid
+
+from botocore.config import Config
 
 '''
 initialize logger
@@ -13,20 +16,49 @@ def initialize_logger(name: str = __name__):
 
 logger = initialize_logger()
 
-def get_client(name: str):
+'''
+get parameters from namespace uses the get_parameters_by_path api
+to request all parameters at once.
+'''
+def get_parameters_from_namespace(namespace: str):
+    # initialize the client for requests
+    ssm = boto3.client('ssm', config = Config(
+        retries = {
+            'max_attempts': 5
+        }
+    ))
+
+    # get parameters from /some/namespace/path
+    response = ssm.get_parameters_by_path(
+        Path = namespace,
+        Recursive = True,
+        WithDecryption = False
+    )
+
+    if not response:
+        raise AwsGetParametersByPathError(f'{namespace} request failed.')
+
+    params = []
+    for p in response['Parameters']:
+        logger.debug('Retrieved {} parameter'.format(p['Name']))
+        params.append((p['Name'], p['Value']))
+    
+    return params
+
+class AwsGetParametersByPathError(Exception):
     pass
 
-def get_parameter_namespace(namespace: str):
-    return f'/com/flores/{namespace}'
-
 '''
-1. pull values from Parameter Store based on environment info
+1. pull values from sources
+2. create configuration file (optional)
+3. start the batch-processor
 '''
 if __name__ == '__main__':
     logger.info('Gathering configuration...')
 
-    env_namespace = os.getenv('namespace')
-    param_path = get_parameter_namespace(env_namespace)
-    logger.debug(f'Parameter path: {param_path}')
+    # the instance should have this in the environment
+    namespace = os.getenv('namespace')
+    params = get_parameters_from_namespace(namespace)
+
 
     logger.info('Process completed successfully.')
