@@ -17,12 +17,13 @@ def lambda_handler(event, context):
     bucket, key = cfn.get_event_info(event)
 
     # stackname will be the object creating the event
-    stack_name = cfn.stack_name_from_prefix(key)
+    stack_name, stack_prefix = cfn.stack_name_from_prefix(key)
+
 
     # get template body from S3
     s3 = boto3.resource('s3')
     template_body_str = cfn.get_s3_object_body(s3, 'floresj4-cloudformation', 'template.yml')
-
+    user_data = 
     # get template params for S3
     params_str = cfn.get_s3_object_body(s3, 'floresj4-cloudformation', 'params.yml')
     template_parameters = yaml.load(params_str, Loader = yaml.FullLoader)

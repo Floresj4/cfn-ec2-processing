@@ -28,18 +28,24 @@ def  get_event_info(event):
 
 
 '''
-For now, handle a maven, semantic versioned, jar
+For now, handle a maven, semantic versioned, jar.  Get the stack
+name and prefix from the resource which causes creation.
 '''
 def stack_name_from_prefix(prefix: str):
     stack_name = prefix
+    stack_namespace = ''
 
     if prefix.endswith('.jar'):
         last_slash = prefix.rfind('/')
         i = 0 if last_slash < 0 else last_slash + 1
         stack_name = prefix[i : -4].replace('.', '')
+        stack_namespace = prefix[:i]
 
-    logger.info(f'Stack name from prefix as {stack_name}')
-    return stack_name
+    # TODO prevent root namespace. 
+    stack_namespace = '/{}'.format(prefix[:i])
+
+    logger.info(f'Stack attributes retrieved from key: name = {stack_name}, namespace = {stack_namespace}')
+    return (stack_name, stack_namespace)
 
 '''
 load the template body used in the CFN client 
