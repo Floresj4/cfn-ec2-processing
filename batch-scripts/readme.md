@@ -6,4 +6,10 @@ Initialize & start the batch processing application.  This script can be execute
 
 ### batch-config
 
-Deploys the configuration properties required for the batch-processor application. 
+Deploys configuration properties required for the batch-processor application. 
+
+From the root directory
+
+    py .\batch-scripts\batch-config.py {filepath} {namespace}
+
+ will deploy configuration from filepath into AWS with the {namespace} prefix.  Use `batch-config.py --h` for more information.
