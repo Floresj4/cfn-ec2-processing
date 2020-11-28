@@ -14,7 +14,7 @@ Change information can be found [here](./changes.md).
 - remove role creation from cloudformation template
 
 ## Folders
-[batch-init](./batch-init/) - the processing launch script
+[batch-scripts](./batch-scripts/) - scripts for configuring and launching
 
 [batch-processor/](./batch-processor/) - the java project to perform processing on the EC2 instance
 
