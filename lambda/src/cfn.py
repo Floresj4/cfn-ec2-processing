@@ -9,7 +9,7 @@ def initialize_logger(name: str = __name__):
     FORMAT = '[%(levelname)s]:%(asctime)s %(message)s'
     logging.basicConfig(format = FORMAT)
     logger = logging.getLogger(name)
-    logger.setLevel(os.getenv('LOGGING_LEVEL', 'INFO'))
+    logger.setLevel(os.getenv('LOGGING_LEVEL', 'DEBUG'))
     return logger
 
 logger = initialize_logger()
@@ -29,22 +29,27 @@ def  get_event_info(event):
 
 '''
 For now, handle a maven, semantic versioned, jar.  Get the stack
-name and prefix from the resource which causes creation.
+name and key from the resource which causes creation.
+TODO prevent root namespace. 
 '''
-def stack_name_from_prefix(prefix: str):
-    stack_name = prefix
+def stack_name_from_prefix(key: str):
+    stack_name = key
     stack_namespace = ''
 
-    if prefix.endswith('.jar'):
-        last_slash = prefix.rfind('/')
+    # only handling jars at the moment
+    if stack_name.endswith('.jar'):
+        last_slash = key.rfind('/')
         i = 0 if last_slash < 0 else last_slash + 1
-        stack_name = prefix[i : -4].replace('.', '')
-        stack_namespace = prefix[:i]
 
-    # TODO prevent root namespace. 
-    stack_namespace = '/{}'.format(prefix[:i])
+        # get attributes for instance environment
+        stack_name = key[i : -4].replace('.', '')
+        stack_namespace = key[:i]
 
-    logger.info(f'Stack attributes retrieved from key: name = {stack_name}, namespace = {stack_namespace}')
+        if not stack_namespace or not stack_namespace[0] == '/':
+            stack_namespace = f'/{stack_namespace}'
+            logger.debug(stack_namespace[0])
+
+    logger.info(f'Attributes from key {key}: name = {stack_name}, namespace = {stack_namespace}')
     return (stack_name, stack_namespace)
 
 '''
