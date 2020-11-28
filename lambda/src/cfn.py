@@ -45,9 +45,10 @@ def stack_name_from_prefix(key: str):
         stack_name = key[i : -4].replace('.', '')
         stack_namespace = key[:i]
 
-        if not stack_namespace or not stack_namespace[0] == '/':
+        if not stack_namespace or stack_namespace == '/':
+            stack_namespace = f'/{stack_name}'
+        elif not stack_namespace[0] == '/':
             stack_namespace = f'/{stack_namespace}'
-            logger.debug(stack_namespace[0])
 
     logger.info(f'Attributes from key {key}: name = {stack_name}, namespace = {stack_namespace}')
     return (stack_name, stack_namespace)

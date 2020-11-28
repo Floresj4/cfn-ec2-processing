@@ -24,11 +24,11 @@ class TestCfn(unittest.TestCase):
     def test_adjust_stack_name(self):
         stack_name, stack_namespace = cfn.stack_name_from_prefix('spring-batch-0.0.1-SNAPSHOT.jar')
         self.assertEqual('spring-batch-001-SNAPSHOT', stack_name)
-        self.assertEqual('/', stack_namespace)
+        self.assertEqual('/spring-batch-001-SNAPSHOT', stack_namespace)
 
         stack_name, stack_namespace = cfn.stack_name_from_prefix('project-0.1.1.jar')
         self.assertEqual('project-011', stack_name)
-        self.assertEqual('/', stack_namespace)
+        self.assertEqual('/project-011', stack_namespace)
 
         stack_name, stack_namespace = cfn.stack_name_from_prefix('some/prefix/project-1.1.1.jar')
         self.assertEqual('project-111', stack_name)
@@ -36,7 +36,7 @@ class TestCfn(unittest.TestCase):
 
         stack_name, stack_namespace = cfn.stack_name_from_prefix('/project-1.1.2.jar')
         self.assertEqual('project-112', stack_name)
-        self.assertEqual('/', stack_namespace)
+        self.assertEqual('/project-112', stack_namespace)
 
     '''
     load the template body used in the CFN client 
