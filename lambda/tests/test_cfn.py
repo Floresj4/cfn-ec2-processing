@@ -22,17 +22,21 @@ class TestCfn(unittest.TestCase):
     handle a maven, semantic versioned, jar 
     '''
     def test_adjust_stack_name(self):
-        stack_name, stack_prefix = cfn.stack_name_from_prefix('spring-batch-0.0.1-SNAPSHOT.jar')
+        stack_name, stack_namespace = cfn.stack_name_from_prefix('spring-batch-0.0.1-SNAPSHOT.jar')
         self.assertEqual('spring-batch-001-SNAPSHOT', stack_name)
+        self.assertEqual('/', stack_namespace)
 
-        stack_name, stack_prefix = cfn.stack_name_from_prefix('project-0.1.1.jar')
+        stack_name, stack_namespace = cfn.stack_name_from_prefix('project-0.1.1.jar')
         self.assertEqual('project-011', stack_name)
+        self.assertEqual('/', stack_namespace)
 
-        stack_name, stack_prefix = cfn.stack_name_from_prefix('some/prefix/project-1.1.1.jar')
+        stack_name, stack_namespace = cfn.stack_name_from_prefix('some/prefix/project-1.1.1.jar')
         self.assertEqual('project-111', stack_name)
-        self.assertEqual('/some/prefix/', stack_prefix)
-        stack_name, stack_prefix = cfn.stack_name_from_prefix('/project-1.1.2.jar')
+        self.assertEqual('/some/prefix/', stack_namespace)
+
+        stack_name, stack_namespace = cfn.stack_name_from_prefix('/project-1.1.2.jar')
         self.assertEqual('project-112', stack_name)
+        self.assertEqual('/', stack_namespace)
 
     '''
     load the template body used in the CFN client 
