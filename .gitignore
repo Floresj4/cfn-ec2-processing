@@ -21,3 +21,6 @@ params.yml
 # ignore anything going into the lambda/
 # directory, it's strictly for build output
 lambda/build/*.zip
+
+# output for spring application
+application.properties
