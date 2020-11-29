@@ -11,7 +11,7 @@ def initialize_logger(name: str = __name__):
     FORMAT = '[%(levelname)s]:%(asctime)s %(message)s'
     logging.basicConfig(format = FORMAT)
     logger = logging.getLogger(name)
-    logger.setLevel(os.getenv('LOGGING_LEVEL', 'INFO'))
+    logger.setLevel(os.getenv('LOGGING_LEVEL', 'DEBUG'))
     return logger
 
 logger = initialize_logger()
@@ -61,6 +61,17 @@ def create_properties_file(params: list):
             out.write(out_line + '\n')
             logger.debug(out_line)
 
+'''
+get commandline options for launching the application
+from this script
+'''
+def get_commandline_args(params: list):
+    # TODO this should be sys independent
+    cmdline_args = ' '.join(['--{}={}'.format(p[0], p[1]) for p in params])
+    logger.debug('Generated commandline arguments to append:')
+    logger.debug(f'{cmdline_args}')
+    return cmdline_args
+
 class AwsGetParametersByPathError(Exception):
     pass
 
@@ -78,7 +89,8 @@ if __name__ == '__main__':
     logger.info(f'Namespace: {namespace}')
 
     params = get_parameters_from_namespace(namespace)
-    create_properties_file(params)
 
+    create_properties_file(params)
+    cmdline_args = get_commandline_args(params)
 
     logger.info('Process completed successfully.')
