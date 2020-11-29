@@ -43,7 +43,7 @@ def get_parameters_from_namespace(namespace: str):
         logger.debug('Retrieved {} parameter'.format(p['Name']))
         params.append((p['Name'], p['Value']))  #tuple
 
-    logger.debug(f'returning get_parameteres_by_path response: {params}')
+    logger.debug('Get_parameters_by_path returned {} params'.format(len(params)))
     return params
 
 class AwsGetParametersByPathError(Exception):
@@ -63,9 +63,5 @@ if __name__ == '__main__':
     logger.info(f'Namespace: {namespace}')
 
     params = get_parameters_from_namespace(namespace)
-    
-    logger.debug(params)
-    for p in params:
-        logger.debug(p)
 
     logger.info('Process completed successfully.')
