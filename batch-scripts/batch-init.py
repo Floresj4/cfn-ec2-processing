@@ -41,8 +41,9 @@ def get_parameters_from_namespace(namespace: str):
     params = []
     for p in response['Parameters']:
         logger.debug('Retrieved {} parameter'.format(p['Name']))
-        params.append((p['Name'], p['Value']))
-    
+        params.append((p['Name'], p['Value']))  #tuple
+
+    logger.debug(f'returning get_parameteres_by_path response: {params}')
     return params
 
 class AwsGetParametersByPathError(Exception):
@@ -59,6 +60,9 @@ if __name__ == '__main__':
     # the instance should have this in the environment
     namespace = os.getenv('namespace')
     params = get_parameters_from_namespace(namespace)
-
+    
+    logger.debug(params)
+    for p in params:
+        logger.debug(p)
 
     logger.info('Process completed successfully.')
