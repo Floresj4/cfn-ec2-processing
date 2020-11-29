@@ -59,6 +59,9 @@ if __name__ == '__main__':
 
     # the instance should have this in the environment
     namespace = os.getenv('namespace')
+    logger.info(f'Initializing instance...')
+    logger.info(f'Namespace: {namespace}')
+
     params = get_parameters_from_namespace(namespace)
     
     logger.debug(params)
