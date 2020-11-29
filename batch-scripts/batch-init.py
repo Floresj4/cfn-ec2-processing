@@ -11,7 +11,7 @@ def initialize_logger(name: str = __name__):
     FORMAT = '[%(levelname)s]:%(asctime)s %(message)s'
     logging.basicConfig(format = FORMAT)
     logger = logging.getLogger(name)
-    logger.setLevel(os.getenv('LOGGING_LEVEL', 'DEBUG'))
+    logger.setLevel(os.getenv('LOGGING_LEVEL', 'INFO'))
     return logger
 
 logger = initialize_logger()
@@ -39,12 +39,27 @@ def get_parameters_from_namespace(namespace: str):
         raise AwsGetParametersByPathError(f'{namespace} request failed.')
 
     params = []
+    nmspce_to_remove = namespace + '/'
     for p in response['Parameters']:
         logger.debug('Retrieved {} parameter'.format(p['Name']))
-        params.append((p['Name'], p['Value']))  #tuple
 
-    logger.debug('Get_parameters_by_path returned {} params'.format(len(params)))
+        # remove the namespace that was added
+        name_only = p['Name'].replace(nmspce_to_remove, '')
+        params.append((name_only, p['Value']))  #tuple
+
+    logger.info('Get_parameters_by_path returned {} params'.format(len(params)))
     return params
+
+'''
+create the instance properties file.  outputs locally for now
+'''
+def create_properties_file(params: list):
+    logger.info('Creating instance properties file...')
+    with open('./application.properties', 'w') as out:
+        for name, namespace in params:
+            out_line = f'{name}={namespace}'
+            out.write(out_line + '\n')
+            logger.debug(out_line)
 
 class AwsGetParametersByPathError(Exception):
     pass
@@ -63,5 +78,7 @@ if __name__ == '__main__':
     logger.info(f'Namespace: {namespace}')
 
     params = get_parameters_from_namespace(namespace)
+    create_properties_file(params)
+
 
     logger.info('Process completed successfully.')
