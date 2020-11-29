@@ -1,6 +1,7 @@
 import logging, os
 import argparse
 import boto3, uuid
+import subprocess
 
 from botocore.config import Config
 
@@ -72,6 +73,14 @@ def get_commandline_args(params: list):
     logger.debug(f'{cmdline_args}')
     return cmdline_args
 
+'''
+get things from other AWS services
+--- only s3 at the moment ---
+dump outputs to the current directory
+'''
+def get_resource_params(params: list):
+    pass
+
 class AwsGetParametersByPathError(Exception):
     pass
 
@@ -88,7 +97,11 @@ if __name__ == '__main__':
     logger.info(f'Initializing instance...')
     logger.info(f'Namespace: {namespace}')
 
+    # get parameters
     params = get_parameters_from_namespace(namespace)
+    
+    # get things from other AWS services
+    get_resource_params(params)
 
     create_properties_file(params)
     cmdline_args = get_commandline_args(params)
