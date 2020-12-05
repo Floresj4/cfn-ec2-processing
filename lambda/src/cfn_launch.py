@@ -1,7 +1,10 @@
-import boto3, sys, os
+import sys, os
 import argparse, logging
 import yaml, json
 import uuid
+
+import boto3
+from botocore.config import Config
 
 import cfn
 
@@ -12,33 +15,63 @@ logger = cfn.initialize_logger()
 lambda entrypoint
 '''
 def lambda_handler(event, context):
+    try:
+        # there could be multiple records...
+        # stackname will be the object creating the event
+        bucket, key = cfn.get_event_info(event)
+        stack_name, stack_namespace = cfn.stack_name_from_prefix(key)
+        put_event_resource_param(stack_namespace, bucket, key)
 
-    # there could be multiple records
-    bucket, key = cfn.get_event_info(event)
+        # get template body from S3
+        s3 = boto3.resource('s3')
+        template_body_str = cfn.get_s3_object_body(s3, 'floresj4-cloudformation', 'template.yml')
 
-    # stackname will be the object creating the event
-    stack_name, stack_prefix = cfn.stack_name_from_prefix(key)
+        # get template params for S3
+        params_str = cfn.get_s3_object_body(s3, 'floresj4-cloudformation', 'params.yml')
+        template_parameters = yaml.load(params_str, Loader = yaml.FullLoader)
 
+        # execute the client request to create
+        resp = cfn.create_stack(stack_name, template_body_str, template_parameters)
 
-    # get template body from S3
-    s3 = boto3.resource('s3')
-    template_body_str = cfn.get_s3_object_body(s3, 'floresj4-cloudformation', 'template.yml')
-    user_data = 
-    # get template params for S3
-    params_str = cfn.get_s3_object_body(s3, 'floresj4-cloudformation', 'params.yml')
-    template_parameters = yaml.load(params_str, Loader = yaml.FullLoader)
+        return {
+            'statusCode': 200,
+            'body': json.dumps({
+                'stack_status': resp.stack_status,
+                'stack_status_reason': resp.stack_status_reason,
+                'creation_time': resp.creation_time.strftime("%m/%d/%Y, %H:%M:%S")
+            })
+        }
+    except Exception as e:
+        logger.error(e)
 
-    # execute the client request to create
-    resp = cfn.create_stack(stack_name, template_body_str, template_parameters)
+        return {
+            'statusCode': 400,
+            'body': 'View application logs for more detail.'
+        }
 
-    return {
-        'statusCode': 200,
-        'body': json.dumps({
-            'stack_status': resp.stack_status,
-            'stack_status_reason': resp.stack_status_reason,
-            'creation_time': resp.creation_time.strftime("%m/%d/%Y, %H:%M:%S")
-        })
-    }
+'''
+Add event resource to param store as well.
+Instance init will read this to know which resource to run
+'''
+def put_event_resource_param(namespace: str, bucket: str, key: str):
+    ssm = boto3.client('ssm', config = Config(
+        retries = { 'max_attempts': 5 }
+    ))
+
+    param_path = f'{namespace}/event-resource'
+    param_value = f's3://{bucket}/{key}'
+    response = ssm.put_parameter(
+        Name = param_path,
+        Value = param_value,
+        Type = 'String',
+        Overwrite = True
+    )
+    
+    if not response:
+        raise Exception(f'Putting {param_path} failed.')
+
+    logger.info(f'Put event-resource parameter {param_path} was successful.')
+    return response
 
 '''
 main - local testing and development
