@@ -31,7 +31,7 @@ def lambda_handler(event, context):
         template_parameters = yaml.load(params_str, Loader = yaml.FullLoader)
 
         # execute the client request to create
-        resp = cfn.create_stack(stack_name, template_body_str, template_parameters)
+        # resp = cfn.create_stack(stack_name, template_body_str, template_parameters)
 
         return {
             'statusCode': 200,
@@ -60,6 +60,8 @@ def put_event_resource_param(namespace: str, bucket: str, key: str):
 
     param_path = f'{namespace}/event-resource'
     param_value = f's3://{bucket}/{key}'
+
+    logger.info(f'Putting event-resource parameter: {param_path}')
     response = ssm.put_parameter(
         Name = param_path,
         Value = param_value,
@@ -70,7 +72,6 @@ def put_event_resource_param(namespace: str, bucket: str, key: str):
     if not response:
         raise Exception(f'Putting {param_path} failed.')
 
-    logger.info(f'Put event-resource parameter {param_path} was successful.')
     return response
 
 '''
