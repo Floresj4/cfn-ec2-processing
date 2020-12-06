@@ -20,6 +20,7 @@ def lambda_handler(event, context):
         # stackname will be the object creating the event
         bucket, key = cfn.get_event_info(event)
         stack_name, stack_namespace = cfn.stack_name_from_prefix(key)
+
         put_event_resource_param(stack_namespace, bucket, key)
 
         # get template body from S3
@@ -31,14 +32,14 @@ def lambda_handler(event, context):
         template_parameters = yaml.load(params_str, Loader = yaml.FullLoader)
 
         # execute the client request to create
-        # resp = cfn.create_stack(stack_name, template_body_str, template_parameters)
+        cfn_response = cfn.create_stack(stack_name, template_body_str, template_parameters)
 
         return {
             'statusCode': 200,
             'body': json.dumps({
-                'stack_status': resp.stack_status,
-                'stack_status_reason': resp.stack_status_reason,
-                'creation_time': resp.creation_time.strftime("%m/%d/%Y, %H:%M:%S")
+                'stack_status': cfn_response.stack_status,
+                'stack_status_reason': cfn_response.stack_status_reason,
+                'creation_time': cfn_response.creation_time.strftime("%m/%d/%Y, %H:%M:%S")
             })
         }
     except Exception as e:
