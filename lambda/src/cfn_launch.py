@@ -61,6 +61,7 @@ if __name__ == '__main__':
     # setup arguments for the script
     parser = argparse.ArgumentParser(description = 'Cloudformation launch script')
     parser.add_argument('stack_name', help = 'The name of the stack being created')
+    parser.add_argument('stack_namespace', help = 'The namespace used on the instance environment.')
     parser.add_argument('--template_body', default = './cloudformation/template.yml', help = 'The path to the template used in the client call')
     parser.add_argument('--template_parameters', default = './cloudformation/params.yml', help = 'The path to the parameters used in the client call.  The AWS CFN Wizard would prompt for these values.')
     args = parser.parse_args()
@@ -72,9 +73,9 @@ if __name__ == '__main__':
         # pull local resources here
         templ_body = cfn.get_object_body(args.template_body)
         templ_params = cfn.get_object_as_yaml(args.template_parameters)
-        
+
         # execute the client request to create
-        resp = cfn.create_stack(stack_name, templ_body, templ_params)
+        resp = cfn.create_stack(stack_name, args.stack_namespace, templ_body, templ_params)
         logger.debug({
             'stack_status': resp.stack_status,
             'stack_status_reason': resp.stack_status_reason,
