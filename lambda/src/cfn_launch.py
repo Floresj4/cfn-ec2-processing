@@ -59,8 +59,9 @@ def put_event_resource_param(namespace: str, bucket: str, key: str):
         retries = { 'max_attempts': 5 }
     ))
 
-    # the trailing / should exist already
-    param_path = namespace + 'event-resource'
+    #add a separator and create the parameter name
+    sep = '/' if not namespace[-1:] == '/' else ''
+    param_path = f'{namespace}{sep}event-resource'
     param_value = f's3://{bucket}/{key}'
 
     logger.info(f'Putting event-resource parameter: {param_path}')
