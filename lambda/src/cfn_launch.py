@@ -21,11 +21,14 @@ def lambda_handler(event, context):
         bucket, key = cfn.get_event_info(event)
         stack_name, stack_namespace = cfn.stack_name_from_prefix(key)
 
-        put_event_resource_param(stack_namespace, bucket, key)
+        cfn.put_event_resource_param(stack_namespace, bucket, key)
 
         # get template body from S3
         s3 = boto3.resource('s3')
         template_body_str = cfn.get_s3_object_body(s3, 'floresj4-cloudformation', 'template.yml')
+
+        # add the stack namespace to the instance environment
+        # template_body_str
 
         # get template params for S3
         params_str = cfn.get_s3_object_body(s3, 'floresj4-cloudformation', 'params.yml')
@@ -49,33 +52,6 @@ def lambda_handler(event, context):
             'statusCode': 400,
             'body': 'View application logs for more detail.'
         }
-
-'''
-Add event resource to param store as well.
-Instance init will read this to know which resource to run
-'''
-def put_event_resource_param(namespace: str, bucket: str, key: str):
-    ssm = boto3.client('ssm', config = Config(
-        retries = { 'max_attempts': 5 }
-    ))
-
-    #add a separator and create the parameter name
-    sep = '/' if not namespace[-1:] == '/' else ''
-    param_path = f'{namespace}{sep}event-resource'
-    param_value = f's3://{bucket}/{key}'
-
-    logger.info(f'Putting event-resource parameter: {param_path}')
-    response = ssm.put_parameter(
-        Name = param_path,
-        Value = param_value,
-        Type = 'String',
-        Overwrite = True
-    )
-    
-    if not response:
-        raise Exception(f'Putting {param_path} failed.')
-
-    return response
 
 '''
 main - local testing and development

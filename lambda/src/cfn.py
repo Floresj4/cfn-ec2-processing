@@ -1,6 +1,9 @@
 import sys, os, uuid
-import yaml, boto3
+import yaml
 import logging
+
+import boto3
+from botocore.config import Config
 
 '''
 initialize logger
@@ -18,13 +21,41 @@ logger = initialize_logger()
 '''
 get relevant event info
 '''
-def  get_event_info(event):
+def get_event_info(event):
     s3 = event['Records'][0]['s3']
     bucket = s3['bucket']['name']
     key = s3['object']['key']
 
     logger.info(f'Pulled bucket ({bucket}) and key ({key}) from object event')
     return bucket, key
+
+
+'''
+Add event resource to param store as well.
+Instance init will read this to know which resource to run
+'''
+def put_event_resource_param(namespace: str, bucket: str, key: str):
+    ssm = boto3.client('ssm', config = Config(
+        retries = { 'max_attempts': 5 }
+    ))
+
+    #add a separator and create the parameter name
+    sep = '/' if not namespace[-1:] == '/' else ''
+    param_path = f'{namespace}{sep}event-resource'
+    param_value = f's3://{bucket}/{key}'
+
+    logger.info(f'Putting event-resource parameter: {param_path}')
+    response = ssm.put_parameter(
+        Name = param_path,
+        Value = param_value,
+        Type = 'String',
+        Overwrite = True
+    )
+    
+    if not response:
+        raise Exception(f'Putting {param_path} failed.')
+
+    return response
 
 
 '''
