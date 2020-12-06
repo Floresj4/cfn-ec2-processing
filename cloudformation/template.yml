@@ -21,6 +21,10 @@ Parameters:
     InstanceName:
         Type: String
         Description: The instance name configured as a tag
+    InstanceUserData:
+        Type: String
+        Description: Script contents to execute on boot
+        Default: ''
     VPC:
         Type: String
         Description: Deployment VPC
@@ -86,6 +90,7 @@ Resources:
             SecurityGroupIds:
                 - !Ref SshSecurityGroup
             IamInstanceProfile: !Ref BatchProcessingInstanceProfile
+            UserData: !Ref InstanceUserData
             Tags:
                 - Key: Name
                   Value: !Ref InstanceName
