@@ -79,16 +79,15 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     try:
-        
         # use lambda/tests json files to test different event sources
         event_data = get_lambda_event_data('s3-object-created.json')
 
-        # execute the client request to create
-        # resp = cfn.create_stack(stack_name, args.stack_namespace, templ_body, templ_params)
-        # logger.debug({
-        #     'stack_status': resp.stack_status,
-        #     'stack_status_reason': resp.stack_status_reason,
-        #     'creation_time': resp.creation_time.strftime("%m/%d/%Y, %H:%M:%S")
-        # })
+        # execute the lambda handler directly
+        resp = lambda_handler(event_data, None)
+        logger.debug({
+            'stack_status': resp.stack_status,
+            'stack_status_reason': resp.stack_status_reason,
+            'creation_time': resp.creation_time.strftime("%m/%d/%Y, %H:%M:%S")
+        })
     except FileNotFoundError as fnfe:
         logger.fatal(str(fnfe))
