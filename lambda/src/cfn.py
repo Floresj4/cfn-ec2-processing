@@ -137,16 +137,7 @@ def get_user_data(name, namespace):
 initialize a cloudformation client and make a request to
 create the stack/resources
 '''
-def create_stack(stack_name: str, stack_namespace: str, template_body: str, template_parameters: []):
-    # get the encoded userdata
-    instance_userdata = get_user_data(stack_name, stack_namespace)
-
-    # append the stack name as the Name tag on the EC2 instance
-    template_parameters.extend([
-        { 'ParameterKey': 'InstanceName', 'ParameterValue': stack_name },
-        { 'ParameterKey': 'InstanceUserData', 'ParameterValue': instance_userdata }
-    ])
-
+def create_stack(stack_name: str, template_body: str, template_parameters: []):
     logger.debug(f'Stringified template body\n{template_body}')
     logger.debug(f'Template parameters\n{template_parameters}')
 
