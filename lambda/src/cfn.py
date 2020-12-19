@@ -1,5 +1,5 @@
 import sys, os, uuid
-import yaml
+import yaml, base64
 import logging
 
 import boto3
@@ -118,17 +118,34 @@ def get_s3_object_body(s3, bucket: str, prefix: str):
     obj = s3.Object(bucket, prefix)
     return obj.get()['Body'].read().decode('utf-8')
 
+'''
+get ec2-userdata to add into the cloudformation create request
+'''
+def get_user_data(name, namespace):
+    batch_dir = '/batch-processing'
+
+    userdata = ['#!/bin/sh',
+        f'mkdir -p {batch_dir} && touch {batch_dir}/namespace',
+        f'echo namespace={namespace} >> {batch_dir}/namespace'
+    ]
+
+    stringified = '\n'.join(userdata)
+    encoded_userdata = base64.b64encode(stringified.encode('utf-8'))
+    return str(encoded_userdata, 'utf-8')
 
 '''
 initialize a cloudformation client and make a request to
 create the stack/resources
 '''
-def create_stack(stack_name: str, template_body: str, template_parameters: []):
+def create_stack(stack_name: str, stack_namespace: str, template_body: str, template_parameters: []):
+    # get the encoded userdata
+    instance_userdata = get_user_data(stack_name, stack_namespace)
+
     # append the stack name as the Name tag on the EC2 instance
-    template_parameters.append({
-        'ParameterKey': 'InstanceName',
-        'ParameterValue': stack_name
-    })
+    template_parameters.extend([
+        { 'ParameterKey': 'InstanceName', 'ParameterValue': stack_name },
+        { 'ParameterKey': 'InstanceUserData', 'ParameterValue': instance_userdata }
+    ])
 
     logger.debug(f'Stringified template body\n{template_body}')
     logger.debug(f'Template parameters\n{template_parameters}')
