@@ -27,12 +27,18 @@ def lambda_handler(event, context):
         s3 = boto3.resource('s3')
         template_body_str = cfn.get_s3_object_body(s3, 'floresj4-cloudformation', 'template.yml')
 
-        # add the stack namespace to the instance environment
-        # template_body_str
+        # get the encoded userdata
+        instance_userdata = cfn.get_user_data(stack_name, stack_namespace)
 
         # get template params for S3
         params_str = cfn.get_s3_object_body(s3, 'floresj4-cloudformation', 'params.yml')
         template_parameters = yaml.load(params_str, Loader = yaml.FullLoader)
+
+        # append the stack name as the Name tag on the EC2 instance
+        template_parameters.extend([
+            { 'ParameterKey': 'InstanceName', 'ParameterValue': stack_name },
+            { 'ParameterKey': 'InstanceUserData', 'ParameterValue': instance_userdata }
+        ])
 
         # execute the client request to create
         cfn_response = cfn.create_stack(stack_name, template_body_str, template_parameters)
@@ -54,32 +60,35 @@ def lambda_handler(event, context):
         }
 
 '''
+load a stored event file for local development and testing
+'''
+def get_lambda_event_data(event_file: str):
+    event_data_path = f'./lambda/tests/resources/{event_file}'
+    with open(event_data_path, 'r') as data:
+        return json.load(data)
+    
+'''
 main - local testing and development
 '''
 if __name__ == '__main__':
 
     # setup arguments for the script
     parser = argparse.ArgumentParser(description = 'Cloudformation launch script')
-    parser.add_argument('stack_name', help = 'The name of the stack being created')
-    parser.add_argument('stack_namespace', help = 'The namespace used on the instance environment.')
     parser.add_argument('--template_body', default = './cloudformation/template.yml', help = 'The path to the template used in the client call')
     parser.add_argument('--template_parameters', default = './cloudformation/params.yml', help = 'The path to the parameters used in the client call.  The AWS CFN Wizard would prompt for these values.')
     args = parser.parse_args()
 
     try:
-        #collect arguments here
-        stack_name = args.stack_name.capitalize()
-
-        # pull local resources here
-        templ_body = cfn.get_object_body(args.template_body)
-        templ_params = cfn.get_object_as_yaml(args.template_parameters)
+        
+        # use lambda/tests json files to test different event sources
+        event_data = get_lambda_event_data('s3-object-created.json')
 
         # execute the client request to create
-        resp = cfn.create_stack(stack_name, args.stack_namespace, templ_body, templ_params)
-        logger.debug({
-            'stack_status': resp.stack_status,
-            'stack_status_reason': resp.stack_status_reason,
-            'creation_time': resp.creation_time.strftime("%m/%d/%Y, %H:%M:%S")
-        })
+        # resp = cfn.create_stack(stack_name, args.stack_namespace, templ_body, templ_params)
+        # logger.debug({
+        #     'stack_status': resp.stack_status,
+        #     'stack_status_reason': resp.stack_status_reason,
+        #     'creation_time': resp.creation_time.strftime("%m/%d/%Y, %H:%M:%S")
+        # })
     except FileNotFoundError as fnfe:
         logger.fatal(str(fnfe))
