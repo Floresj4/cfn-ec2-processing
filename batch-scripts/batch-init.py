@@ -79,7 +79,19 @@ get things from other AWS services
 dump outputs to the current directory
 '''
 def get_resource_params(params: list):
-    pass
+    for param in params:
+        if param[1].startswith('s3://'):
+            logger.info('Collecting S3 resource {}'.format(param[1]))
+
+'''
+get the namespace provided by launch.  This value will
+be in a text file at the same place as this script
+'''
+def get_instance_namespace():
+    # the value is key=value
+    with open('namespace', 'r') as namefile:
+        return namefile.readline().split('=')[1]
+
 
 class AwsGetParametersByPathError(Exception):
     pass
@@ -92,8 +104,7 @@ class AwsGetParametersByPathError(Exception):
 if __name__ == '__main__':
     logger.info('Gathering configuration...')
 
-    # the instance should have this in the environment
-    namespace = os.getenv('namespace')
+    namespace = get_instance_namespace()
     logger.info(f'Initializing instance...')
     logger.info(f'Namespace: {namespace}')
 
