@@ -1,12 +1,19 @@
 # Changes
 
+###
+
 ### 0.0.4
 - Attach IAM Role to instance
 - EC2 can pull the proper resources from S3
+- Add encoded userdata to stack creation
+  - make an directory for processing on the instance
+  - save namespace to processing directory
+  - install python3
+  - download batch-init.py from S3
 
 ### 0.0.3
 - :trophy: completed testing of stack deployment from lambda event.  manually added EIP to puTTY onto the instance and confirm
-- restructured `/lambda` for unit test with pytest.  removed lambda-out/ and lambda-build/.  Everything happens in the lambda/ directory.
+- restructured `/lambda` for unit test with pytest.  removed lambda-out/ and lambda/build/.  Everything happens in the lambda/ directory.
 - add `/lambda/test`.  only a couple of tests for now.  in progress...
 - moved data for batch into `batch-processor/`
 - updated `cfn-launch.sh` to build from `src/` to `build/`
