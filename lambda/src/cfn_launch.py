@@ -27,12 +27,13 @@ def lambda_handler(event, context):
         s3 = boto3.resource('s3')
         template_body_str = cfn.get_s3_object_body(s3, 'floresj4-cloudformation', 'template.yml')
 
-        # get the encoded userdata
-        instance_userdata = cfn.get_user_data(stack_name, stack_namespace)
-
         # get template params for S3
         params_str = cfn.get_s3_object_body(s3, 'floresj4-cloudformation', 'params.yml')
         template_parameters = yaml.load(params_str, Loader = yaml.FullLoader)
+
+        # get the encoded userdata
+        instance_userdata = cfn.get_user_data('floresj4-cfn-ec2-processing',
+            stack_name, stack_namespace)
 
         # append the stack name as the Name tag on the EC2 instance
         template_parameters.extend([
