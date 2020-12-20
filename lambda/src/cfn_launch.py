@@ -84,10 +84,6 @@ if __name__ == '__main__':
 
         # execute the lambda handler directly
         resp = lambda_handler(event_data, None)
-        logger.debug({
-            'stack_status': resp.stack_status,
-            'stack_status_reason': resp.stack_status_reason,
-            'creation_time': resp.creation_time.strftime("%m/%d/%Y, %H:%M:%S")
-        })
+
     except FileNotFoundError as fnfe:
         logger.fatal(str(fnfe))
