@@ -132,6 +132,7 @@ def get_user_data(bucket_path, name, namespace):
     ]
 
     stringified = '\n'.join(userdata)
+    logger.info(f'Generating instance UserData: {stringified}')
     encoded_userdata = base64.b64encode(stringified.encode('utf-8'))
     return str(encoded_userdata, 'utf-8')
 
