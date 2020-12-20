@@ -126,7 +126,8 @@ def get_user_data(name, namespace):
 
     userdata = ['#!/bin/sh',
         f'mkdir -p {batch_dir} && touch {batch_dir}/namespace',
-        f'echo namespace={namespace} >> {batch_dir}/namespace'
+        f'echo namespace={namespace} >> {batch_dir}/namespace',
+        f'yum install -y python3'
     ]
 
     stringified = '\n'.join(userdata)
