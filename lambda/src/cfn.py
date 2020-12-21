@@ -125,6 +125,7 @@ def get_user_data(bucket_path, name, namespace):
     batch_dir = '/batch-processing'
 
     userdata = ['#!/bin/sh',
+        f'yum update -y',
         f'mkdir -p {batch_dir} && touch {batch_dir}/namespace',
         f'echo namespace={namespace} >> {batch_dir}/namespace',
         f'aws s3 cp s3://{bucket_path}/batch-init.py {batch_dir}',
