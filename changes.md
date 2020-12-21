@@ -1,6 +1,8 @@
 # Changes
 
 ### 0.0.5
+- install boto3 from userdata and launch batch-init as a background process
+- update yum on instance start to avoid process locking
 
 ### 0.0.4
 - Attach IAM Role to instance
