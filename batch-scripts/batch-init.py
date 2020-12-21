@@ -2,6 +2,7 @@ import logging, os
 import argparse
 import boto3, uuid
 import subprocess
+import requests
 
 from botocore.config import Config
 
@@ -21,13 +22,7 @@ logger = initialize_logger()
 get parameters from namespace uses the get_parameters_by_path api
 to request all parameters at once.
 '''
-def get_parameters_from_namespace(namespace: str):
-    # initialize the client for requests
-    ssm = boto3.client('ssm', config = Config(
-        retries = {
-            'max_attempts': 5
-        }
-    ))
+def get_parameters_from_namespace(ssm, namespace: str):
 
     # get parameters from /some/namespace/path
     response = ssm.get_parameters_by_path(
@@ -93,6 +88,19 @@ def get_instance_namespace():
         return namefile.readline().split('=')[1]
 
 
+'''
+get the region the instance is deployed in.  used
+in configuring the boto3 client(s)
+'''
+def get_instance_region():
+    logger.info('Querying instance region for boto client configuration')
+    resp = requests.get('http://169.254.169.254/latest/meta-data/placement/region')
+    return resp.text if resp.status_code == 200 else 'us-east-1'
+
+
+'''
+custom exception for raising and logging
+'''
 class AwsGetParametersByPathError(Exception):
     pass
 
@@ -108,8 +116,18 @@ if __name__ == '__main__':
     logger.info(f'Initializing instance...')
     logger.info(f'Namespace: {namespace}')
 
+    instance_region = get_instance_region()
+
+    # initialize the client for requests
+    ssm = boto3.client('ssm', config = Config(
+        region = instance_region,
+        retries = {
+            'max_attempts': 5
+        }
+    ))
+
     # get parameters
-    params = get_parameters_from_namespace(namespace)
+    params = get_parameters_from_namespace(ssm, namespace)
     
     # get things from other AWS services
     get_resource_params(params)
