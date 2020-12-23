@@ -86,6 +86,8 @@ Resources:
                     Statement:
                       - Effect: Allow
                         Action:
+                          - ssm:GetParameter
+                          - ssm:GetParameters
                           - ssm:GetParametersByPath
                         Resource:
                           - !Join [':', ['arn:aws:ssm', !Ref Region, !Ref AccountId, 'parameter/*']]
