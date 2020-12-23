@@ -116,11 +116,9 @@ if __name__ == '__main__':
     logger.info(f'Initializing instance...')
     logger.info(f'Namespace: {namespace}')
 
-    instance_region = get_instance_region()
-
     # initialize the client for requests
     ssm = boto3.client('ssm', config = Config(
-        region = instance_region,
+        region = get_instance_region(),
         retries = {
             'max_attempts': 5
         }
