@@ -118,7 +118,7 @@ if __name__ == '__main__':
 
     # initialize the client for requests
     ssm = boto3.client('ssm', config = Config(
-        region = get_instance_region(),
+        region_name = get_instance_region(),
         retries = {
             'max_attempts': 5
         }
