@@ -3,6 +3,7 @@
 ### 0.0.5
 - install boto3 from userdata and launch batch-init as a background process
 - update yum on instance start to avoid process locking
+- install python3 requests to query instance region when configuring boto client
 
 ### 0.0.4
 - Attach IAM Role to instance
