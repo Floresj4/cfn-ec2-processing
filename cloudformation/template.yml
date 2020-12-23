@@ -28,6 +28,13 @@ Parameters:
     VPC:
         Type: String
         Description: Deployment VPC
+    Region:
+        Type: String
+        Description: Deployment region
+        Default: us-east-1
+    AccountId:
+        Type: String
+        Description: Account identifier
 
 # TODO roles and policies should not be defined here
 # TODO fine-tune policies
@@ -73,6 +80,15 @@ Resources:
                         Resource:
                           - arn:aws:s3:::floresj4-cfn-ec2-processing
                           - arn:aws:s3:::*/*
+              - PolicyName: SSMAccessPolicy
+                PolicyDocument:
+                    Version: 2012-10-17
+                    Statement:
+                      - Effect: Allow
+                        Action:
+                          - ssm:GetParametersByPath
+                        Resource:
+                          - !Join [':', ['arn:aws:ssm', !Ref Region, !Ref AccountId, 'parameter/*']]
 
     BatchProcessingInstanceProfile:
         Type: AWS::IAM::InstanceProfile
