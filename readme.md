@@ -37,3 +37,7 @@ The `-v` option binds the current directory to `/usr/share/workspace` on the con
 The command below will run the build container to produce the archive.
 
 `docker run -v "%CD%":/usr/share/workspace cfn-launch-lambda:latest`
+
+Upload lambda function code to S3.
+
+`aws s3 cp .\lambda\build\cfn-launch.zip s3://...`
