@@ -1,6 +1,7 @@
 # Changes
 
 ### 0.0.5
+- :trophy: instance successfully starts and launches batch-init script
 - install boto3 from userdata and launch batch-init as a background process
 - update yum on instance start to avoid process locking
 - install python3 requests to query instance region when configuring boto client
