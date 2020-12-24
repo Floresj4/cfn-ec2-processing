@@ -132,7 +132,7 @@ def get_user_data(bucket_path, name, namespace):
         f'yum install -y python3',
         f'python3 -m pip install boto3',
         f'python3 -m pip install requests',
-        f'python3 batch-init.py &'
+        f'python3 {batch_dir}/batch-init.py &'
     ]
 
     stringified = '\n'.join(userdata)
