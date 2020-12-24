@@ -11,7 +11,7 @@ initialize logger
 '''
 def initialize_logger(name: str = __name__):
     FORMAT = '[%(levelname)s]:%(asctime)s %(message)s'
-    logging.basicConfig(format = FORMAT)
+    logging.basicConfig(format = FORMAT, filename = 'batch-init.log')
     logger = logging.getLogger(name)
     logger.setLevel(os.getenv('LOGGING_LEVEL', 'DEBUG'))
     return logger
