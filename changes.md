@@ -4,6 +4,7 @@
 - install boto3 from userdata and launch batch-init as a background process
 - update yum on instance start to avoid process locking
 - install python3 requests to query instance region when configuring boto client
+- log batch-init to a file before configuring cloudwatch for EC2 logs
 
 ### 0.0.4
 - Attach IAM Role to instance
