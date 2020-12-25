@@ -84,7 +84,7 @@ be in a text file at the same place as this script
 def get_instance_namespace():
     # the value is key=value
     with open('namespace', 'r') as namefile:
-        return namefile.readline().split('=')[1]
+        return namefile.readline().rstrip('\n').split('=')[1]
 
 
 '''
@@ -120,6 +120,8 @@ if __name__ == '__main__':
         region_name = get_instance_region(),
         retries = { 'max_attempts': 5 }
     ))
+
+    s3 = boto3.client('s3', config = )
 
     # get parameters
     params = get_parameters_from_namespace(ssm, namespace)
