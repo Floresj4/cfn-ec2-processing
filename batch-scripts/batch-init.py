@@ -62,7 +62,6 @@ get commandline options for launching the application
 from this script
 '''
 def get_commandline_args(params: list):
-    # TODO this should be sys independent
     cmdline_args = ' '.join(['--{}={}'.format(p[0], p[1]) for p in params])
     logger.debug('Generated commandline arguments to append:')
     logger.debug(f'{cmdline_args}')
