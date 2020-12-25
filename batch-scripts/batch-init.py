@@ -112,15 +112,13 @@ if __name__ == '__main__':
     logger.info('Gathering configuration...')
 
     namespace = get_instance_namespace()
-    logger.info(f'Initializing instance...')
+    logger.info(f'Init processing...')
     logger.info(f'Namespace: {namespace}')
 
     # initialize the client for requests
     ssm = boto3.client('ssm', config = Config(
         region_name = get_instance_region(),
-        retries = {
-            'max_attempts': 5
-        }
+        retries = { 'max_attempts': 5 }
     ))
 
     # get parameters
