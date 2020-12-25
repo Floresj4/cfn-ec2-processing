@@ -17,6 +17,19 @@ def initialize_logger(name: str = __name__):
     return logger
 
 logger = initialize_logger()
+clients = {}
+
+'''
+create a boto client instance.
+'''
+def get_client(name: str, region: str):
+    if not clients[name]:
+        clients[name] = boto3.client(name, config = Config(
+            region_name = region,
+            retries = { 'max_attempts': 5 }
+        ))
+
+    return clients[name]
 
 '''
 get parameters from namespace uses the get_parameters_by_path api
@@ -37,10 +50,9 @@ def get_parameters_from_namespace(ssm, namespace: str):
     params = []
     nmspce_to_remove = namespace + '/'
     for p in response['Parameters']:
-        logger.debug('Retrieved {} parameter'.format(p['Name']))
-
         # remove the namespace that was added
         name_only = p['Name'].replace(nmspce_to_remove, '')
+        logger.debug('Retrieved {} parameter'.format(name_only))
         params.append((name_only, p['Value']))  #tuple
 
     logger.info('Get_parameters_by_path returned {} params'.format(len(params)))
@@ -68,14 +80,15 @@ def get_commandline_args(params: list):
     return cmdline_args
 
 '''
-get things from other AWS services
---- only s3 at the moment ---
-dump outputs to the current directory
+get objects from S3
 '''
-def get_resource_params(params: list):
+def get_s3_resources(s3, params: list):
     for param in params:
         if param[1].startswith('s3://'):
             logger.info('Collecting S3 resource {}'.format(param[1]))
+
+            # with open()
+            # s3.download_fileobj()
 
 '''
 get the namespace provided by launch.  This value will
@@ -103,6 +116,7 @@ custom exception for raising and logging
 class AwsGetParametersByPathError(Exception):
     pass
 
+
 '''
 1. pull values from sources
 2. create configuration file (optional)
@@ -116,18 +130,15 @@ if __name__ == '__main__':
     logger.info(f'Namespace: {namespace}')
 
     # initialize the client for requests
-    ssm = boto3.client('ssm', config = Config(
-        region_name = get_instance_region(),
-        retries = { 'max_attempts': 5 }
-    ))
-
-    s3 = boto3.client('s3', config = )
+    region = get_instance_region()
+    ssm = get_client('ssm', region)
+    s3 = get_client('s3', region)
 
     # get parameters
     params = get_parameters_from_namespace(ssm, namespace)
     
     # get things from other AWS services
-    get_resource_params(params)
+    get_s3_resources(s3, params)
 
     create_properties_file(params)
     cmdline_args = get_commandline_args(params)
