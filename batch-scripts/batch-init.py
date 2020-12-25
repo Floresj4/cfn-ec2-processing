@@ -23,7 +23,7 @@ clients = {}
 create a boto client instance.
 '''
 def get_client(name: str, region: str):
-    if not clients[name]:
+    if not name in clients:
         clients[name] = boto3.client(name, config = Config(
             region_name = region,
             retries = { 'max_attempts': 5 }
@@ -105,9 +105,13 @@ get the region the instance is deployed in.  used
 in configuring the boto3 client(s)
 '''
 def get_instance_region():
-    logger.info('Querying instance region for boto client configuration')
-    resp = requests.get('http://169.254.169.254/latest/meta-data/placement/region')
-    return resp.text if resp.status_code == 200 else 'us-east-1'
+    try:
+        logger.info('Querying instance region for boto client configuration')
+        resp = requests.get('http://169.254.169.254/latest/meta-data/placement/region')
+        return resp.text if resp.status_code == 200 else 'us-east-1'
+    except Exception:
+        logger.debug('Unable to query instance metadata for region info')
+        return 'us-east-1'
 
 
 '''
@@ -126,7 +130,6 @@ if __name__ == '__main__':
     logger.info('Gathering configuration...')
 
     namespace = get_instance_namespace()
-    logger.info(f'Init processing...')
     logger.info(f'Namespace: {namespace}')
 
     # initialize the client for requests
