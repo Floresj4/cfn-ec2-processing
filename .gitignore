@@ -24,3 +24,5 @@ lambda/build/*.zip
 
 # output for spring application
 application.properties
+namespace
+batch-init.log
