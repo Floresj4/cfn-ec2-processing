@@ -110,7 +110,7 @@ def get_instance_region():
         resp = requests.get('http://169.254.169.254/latest/meta-data/placement/region')
         return resp.text if resp.status_code == 200 else 'us-east-1'
     except Exception:
-        logger.debug('Unable to query instance metadata for region info')
+        logger.error('Unable to query instance metadata for region.  Default us-east-1')
         return 'us-east-1'
 
 
