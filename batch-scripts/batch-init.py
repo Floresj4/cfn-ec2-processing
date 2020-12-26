@@ -11,7 +11,7 @@ initialize logger
 '''
 def initialize_logger(name: str = __name__):
     FORMAT = '[%(levelname)s]:%(asctime)s %(message)s'
-    logging.basicConfig(format = FORMAT, filename = 'batch-init.log')
+    logging.basicConfig(format = FORMAT, filename = 'batch-init.log', filemode = 'w')
     logger = logging.getLogger(name)
     logger.setLevel(os.getenv('LOGGING_LEVEL', 'DEBUG'))
     return logger
@@ -87,8 +87,6 @@ def get_s3_resources(s3, params: list):
         if param[1].startswith('s3://'):
             logger.info('Collecting S3 resource {}'.format(param[1]))
 
-            # with open()
-            # s3.download_fileobj()
 
 '''
 get the namespace provided by launch.  This value will
