@@ -26,3 +26,4 @@ lambda/build/*.zip
 application.properties
 namespace
 batch-init.log
+batch-scripts/*.jar
