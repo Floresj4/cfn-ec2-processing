@@ -139,10 +139,10 @@ if __name__ == '__main__':
 
     # get parameters
     params = get_parameters_from_namespace(ssm, namespace)
-    
-    # get things from other AWS services
+
     get_s3_resources(s3, params)
 
+    # create a properties file and cmd args
     create_properties_file(params)
     cmdline_args = get_commandline_args(params)
 
