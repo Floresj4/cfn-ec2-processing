@@ -85,9 +85,23 @@ get objects from S3
 def get_s3_resources(s3, params: list):
     for param in params:
         if param[1].startswith('s3://'):
-            logger.info('Collecting S3 resource {}'.format(param[1]))
+            try:
+                logger.info('Collecting S3 resource {}'.format(param[1]))
+                
+                # get s3 attributes from parameter
+                path = param[1].replace('s3://', '')
+                bucket_sep = path.find('/')
+                file_sep = path.rfind('/')
+                bucket = path[:bucket_sep]
+                key = path[bucket_sep + 1:]
+                filename = path[file_sep + 1:]
 
-
+                # download the current directory of execution
+                logger.debug(f'Downloading S3 object: {bucket}, {key}, {filename}')
+                s3.download_file(bucket, key, f'./{filename}')
+            except Exception as e:
+                logger.error('An error occurred downloading {}: {}'.format(param[1],
+                    str(e)))
 '''
 get the namespace provided by launch.  This value will
 be in a text file at the same place as this script
