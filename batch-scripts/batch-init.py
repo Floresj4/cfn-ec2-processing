@@ -69,20 +69,11 @@ def create_properties_file(params: dict):
             out.write(out_line + '\n')
             logger.debug(out_line)
 
-'''
-get commandline options for launching the application
-from this script
-'''
-def get_commandline_args(params: dict):
-    cmdline_args = ' '.join([f'--{k}={v}' for k,v in params.items()])
-    logger.info('Generated commandline arguments to append:')
-    logger.info(f'{cmdline_args}')
-    return cmdline_args
 
 '''
 get objects from S3
 '''
-def get_s3_resources(s3, params: dict):
+def download_s3_resources(s3, params: dict):
     for k,v in params.items():
         if v.startswith('s3://'):
 
@@ -103,6 +94,17 @@ def get_s3_resources(s3, params: dict):
 
             except Exception as e:
                 logger.error('An error occurred downloading {}: {}'.format(v, str(e)))
+
+
+'''
+get commandline options for launching the application
+from this script
+'''
+def get_commandline_args(params: dict):
+    cmdline_args = ' '.join([f'--{k}={v}' for k,v in params.items()])
+    logger.info('Generated commandline arguments to append:')
+    logger.info(f'{cmdline_args}')
+    return cmdline_args
 
 
 '''
@@ -167,7 +169,7 @@ if __name__ == '__main__':
     params = get_parameters_from_namespace(ssm, namespace)
 
     # save s3 objects to the current directory
-    get_s3_resources(s3, params)
+    download_s3_resources(s3, params)
 
     # create a properties file and cmd args from params
     create_properties_file(params)
