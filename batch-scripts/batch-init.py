@@ -75,8 +75,8 @@ from this script
 '''
 def get_commandline_args(params: dict):
     cmdline_args = ' '.join([f'--{k}={v}' for k,v in params.items()])
-    logger.debug('Generated commandline arguments to append:')
-    logger.debug(f'{cmdline_args}')
+    logger.info('Generated commandline arguments to append:')
+    logger.info(f'{cmdline_args}')
     return cmdline_args
 
 '''
