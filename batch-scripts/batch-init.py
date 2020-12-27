@@ -135,11 +135,24 @@ def get_instance_region():
 launch the java application to process data
 '''
 def launch_process(app_name: str, cmdline_args: str):
-    logger.info('Launching batch processor...')
-
     # execute the process and ensure a zero return code
-    process = subprocess.run(['java', '-jar', app_name, cmdline_args])
+    subprocess_exc = ['java', '-jar', app_name, cmdline_args]
+
+    logger.info(f'** Launching {app_name}...')
+    logger.info('** Executing {}'.format(' '.join(subprocess_exc)))
+    process = subprocess.run(subprocess_exc)
     process.check_returncode()
+
+'''
+get the application name from the event-resource.  it is created
+when the lambda function is triggered.
+'''
+def name_from_event_resource(params: dict):
+    if not 'event-resource' in params.keys():
+        raise Exception('The event-resource key is required for processing.')
+
+    last_delim = params['event-resource'].rfind('/')
+    return params['event-resource'][last_delim + 1:]
 
 
 '''
@@ -167,6 +180,7 @@ if __name__ == '__main__':
 
     # get parameters
     params = get_parameters_from_namespace(ssm, namespace)
+    app_name = name_from_event_resource(params)
 
     # save s3 objects to the current directory
     download_s3_resources(s3, params)
@@ -175,6 +189,6 @@ if __name__ == '__main__':
     create_properties_file(params)
     cmdline_args = get_commandline_args(params)
 
-    # launch_process(cmdline_args)
+    launch_process(app_name, cmdline_args)
 
     logger.info('Process completed successfully.')
