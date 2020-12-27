@@ -85,8 +85,9 @@ get objects from S3
 def get_s3_resources(s3, params: dict):
     for k,v in params.items():
         if v.startswith('s3://'):
+
             try:
-                logger.info('Collecting S3 resource {}'.format(v))
+                logger.info(f'Collecting S3 resource {v} from {k} param')
                 
                 # get s3 attributes from parameter
                 path = v.replace('s3://', '')
@@ -99,6 +100,7 @@ def get_s3_resources(s3, params: dict):
                 # download the current directory of execution
                 logger.debug(f'Downloading S3 object: {bucket}, {key}, {filename}')
                 s3.download_file(bucket, key, f'./{filename}')
+
             except Exception as e:
                 logger.error('An error occurred downloading {}: {}'.format(v, str(e)))
 
