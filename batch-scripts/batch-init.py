@@ -127,6 +127,13 @@ def get_instance_region():
 
 
 '''
+launch the java application to process data
+'''
+def launch_process(cmdline_args: str):
+    pass
+
+
+'''
 custom exception for raising and logging
 '''
 class AwsGetParametersByPathError(Exception):
@@ -157,5 +164,7 @@ if __name__ == '__main__':
     # create a properties file and cmd args
     create_properties_file(params)
     cmdline_args = get_commandline_args(params)
+
+    launch_process(cmdline_args)
 
     logger.info('Process completed successfully.')
