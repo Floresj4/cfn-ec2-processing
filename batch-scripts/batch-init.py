@@ -47,13 +47,13 @@ def get_parameters_from_namespace(ssm, namespace: str):
     if not response:
         raise AwsGetParametersByPathError(f'{namespace} request failed.')
 
-    params = []
+    params = {}
     nmspce_to_remove = namespace + '/'
     for p in response['Parameters']:
         # remove the namespace that was added
         name_only = p['Name'].replace(nmspce_to_remove, '')
         logger.debug('Retrieved {} parameter'.format(name_only))
-        params.append((name_only, p['Value']))  #tuple
+        params[name_only] = p['Value']
 
     logger.info('Get_parameters_by_path returned {} params'.format(len(params)))
     return params
@@ -61,11 +61,11 @@ def get_parameters_from_namespace(ssm, namespace: str):
 '''
 create the instance properties file.  outputs locally for now
 '''
-def create_properties_file(params: list):
+def create_properties_file(params: dict):
     logger.info('Creating instance properties file...')
     with open('./application.properties', 'w') as out:
-        for name, namespace in params:
-            out_line = f'{name}={namespace}'
+        for key, value in params.items():
+            out_line = f'{key}={value}'
             out.write(out_line + '\n')
             logger.debug(out_line)
 
@@ -73,8 +73,8 @@ def create_properties_file(params: list):
 get commandline options for launching the application
 from this script
 '''
-def get_commandline_args(params: list):
-    cmdline_args = ' '.join(['--{}={}'.format(p[0], p[1]) for p in params])
+def get_commandline_args(params: dict):
+    cmdline_args = ' '.join([f'--{k}={v}' for k,v in params.items()])
     logger.debug('Generated commandline arguments to append:')
     logger.debug(f'{cmdline_args}')
     return cmdline_args
@@ -82,14 +82,14 @@ def get_commandline_args(params: list):
 '''
 get objects from S3
 '''
-def get_s3_resources(s3, params: list):
-    for param in params:
-        if param[1].startswith('s3://'):
+def get_s3_resources(s3, params: dict):
+    for k,v in params.items():
+        if v.startswith('s3://'):
             try:
-                logger.info('Collecting S3 resource {}'.format(param[1]))
+                logger.info('Collecting S3 resource {}'.format(v))
                 
                 # get s3 attributes from parameter
-                path = param[1].replace('s3://', '')
+                path = v.replace('s3://', '')
                 bucket_sep = path.find('/')
                 file_sep = path.rfind('/')
                 bucket = path[:bucket_sep]
@@ -100,8 +100,9 @@ def get_s3_resources(s3, params: list):
                 logger.debug(f'Downloading S3 object: {bucket}, {key}, {filename}')
                 s3.download_file(bucket, key, f'./{filename}')
             except Exception as e:
-                logger.error('An error occurred downloading {}: {}'.format(param[1],
-                    str(e)))
+                logger.error('An error occurred downloading {}: {}'.format(v, str(e)))
+
+
 '''
 get the namespace provided by launch.  This value will
 be in a text file at the same place as this script
@@ -129,9 +130,12 @@ def get_instance_region():
 '''
 launch the java application to process data
 '''
-def launch_process(cmdline_args: str):
+def launch_process(app_name: str, cmdline_args: str):
     logger.info('Launching batch processor...')
-    pass
+
+    # execute the process and ensure a zero return code
+    process = subprocess.run(['java', '-jar', app_name, cmdline_args])
+    process.check_returncode()
 
 
 '''
@@ -167,6 +171,6 @@ if __name__ == '__main__':
     create_properties_file(params)
     cmdline_args = get_commandline_args(params)
 
-    launch_process(cmdline_args)
+    # launch_process(cmdline_args)
 
     logger.info('Process completed successfully.')
