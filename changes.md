@@ -1,5 +1,8 @@
 # Changes
 
+### 0.0.6
+- launch the Java Spring application for data processing
+
 ### 0.0.5
 - :trophy: instance successfully starts and launches batch-init script
 - install boto3 from userdata and launch batch-init as a background process
