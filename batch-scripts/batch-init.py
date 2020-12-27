@@ -130,6 +130,7 @@ def get_instance_region():
 launch the java application to process data
 '''
 def launch_process(cmdline_args: str):
+    logger.info('Launching batch processor...')
     pass
 
 
@@ -159,9 +160,10 @@ if __name__ == '__main__':
     # get parameters
     params = get_parameters_from_namespace(ssm, namespace)
 
+    # save s3 objects to the current directory
     get_s3_resources(s3, params)
 
-    # create a properties file and cmd args
+    # create a properties file and cmd args from params
     create_properties_file(params)
     cmdline_args = get_commandline_args(params)
 
