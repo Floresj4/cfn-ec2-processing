@@ -55,6 +55,11 @@ def get_parameters_from_namespace(ssm, namespace: str):
         logger.debug('Retrieved {} parameter'.format(name_only))
         params[name_only] = p['Value']
 
+    # event-data must exist in the param store
+    # as the file to download and process
+    if not 'event-data' in params.keys():
+        raise Exception(f'event-data parameter is missing in namespace {namespace}')
+
     logger.info('Get_parameters_by_path returned {} params'.format(len(params)))
     return params
 
