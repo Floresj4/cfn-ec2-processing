@@ -171,6 +171,7 @@ def launch_process(app_name: str, cmdline_args: str):
     process = subprocess.run(subprocess_exc)
     process.check_returncode()
 
+
 '''
 get the application name from the event-resource.  it is created
 when the lambda function is triggered.
@@ -191,9 +192,11 @@ class AwsGetParametersByPathError(Exception):
 
 
 '''
-1. pull values from sources
-2. create configuration file (optional)
-3. start the batch-processor
+1. pull ssm parameter
+2. pull s3 object resources
+3. create commandline argument string
+4. create configuration file
+5. start the batch-processor
 '''
 if __name__ == '__main__':
     try:
