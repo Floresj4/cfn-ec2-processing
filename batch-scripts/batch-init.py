@@ -85,13 +85,8 @@ def download_s3_resources(s3, params: dict):
             try:
                 logger.info(f'Collecting S3 resource {v} from {k} param')
                 
-                # get s3 attributes from parameter
-                path = v.replace('s3://', '')
-                bucket_sep = path.find('/')
-                file_sep = path.rfind('/')
-                bucket = path[:bucket_sep]
-                key = path[bucket_sep + 1:]
-                filename = path[file_sep + 1:]
+                # get s3 attributes from resource path
+                bucket, key, filename = get_download_attributes(v)
 
                 # download the current directory of execution
                 logger.debug(f'Downloading S3 object: {bucket}, {key}, {filename}')
@@ -110,6 +105,19 @@ def get_commandline_args(params: dict):
     logger.info('Generated commandline arguments to append:')
     logger.info(f'{cmdline_args}')
     return cmdline_args
+
+
+'''
+get download attributes from an s3 resource path
+'''
+def get_download_attributes(s3_path: str):
+    path = s3_path.replace('s3://', '')
+    bucket_sep = path.find('/')
+    file_sep = path.rfind('/')
+    bucket = path[:bucket_sep]
+    key = path[bucket_sep + 1:]
+    filename = path[file_sep + 1:]
+    return (bucket, key, filename)
 
 
 '''
