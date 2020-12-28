@@ -27,3 +27,4 @@ application.properties
 namespace
 batch-init.log
 batch-scripts/*.jar
+batch-scripts/*.csv
