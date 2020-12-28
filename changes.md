@@ -3,6 +3,7 @@
 ### 0.0.6
 - Launch the Java Spring application for data processing
 - `event-data` parameter is required to indicate file to process
+- `event-data` is substituted for batch-processor input commandline argument
 
 ### 0.0.5
 - :trophy: Instance successfully starts and launches batch-init script
