@@ -101,7 +101,22 @@ get commandline options for launching the application
 from this script
 '''
 def get_commandline_args(params: dict):
-    cmdline_args = ' '.join([f'--{k}={v}' for k,v in params.items()])
+    cmdline_args = []
+    
+    # exclude event-resource and change event-data
+    for k,v in params.items():
+        if k == 'event-resource':
+            continue
+
+        # change the event-data to what the batch-processor
+        # would require as an input file
+        if k == 'event-data':
+            attrs = get_download_attributes(v)
+            cmdline_args.append('--datafile-path=./{}'.format(attrs[2]))
+        else:
+            cmdline_args.append(f'--{k}={v}')
+
+    cmdline_args = ' '.join(cmdline_args)
     logger.info('Generated commandline arguments to append:')
     logger.info(f'{cmdline_args}')
     return cmdline_args
