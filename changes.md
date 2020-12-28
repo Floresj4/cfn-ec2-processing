@@ -2,6 +2,7 @@
 
 ### 0.0.6
 - launch the Java Spring application for data processing
+- `event-data` parameter is required to indicate file to process
 
 ### 0.0.5
 - :trophy: instance successfully starts and launches batch-init script
