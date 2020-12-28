@@ -181,27 +181,31 @@ class AwsGetParametersByPathError(Exception):
 3. start the batch-processor
 '''
 if __name__ == '__main__':
-    logger.info('Gathering configuration...')
+    try:
+        logger.info('Gathering configuration...')
 
-    namespace = get_instance_namespace()
-    logger.info(f'Namespace: {namespace}')
+        namespace = get_instance_namespace()
+        logger.info(f'Namespace: {namespace}')
 
-    # initialize the client for requests
-    region = get_instance_region()
-    ssm = get_client('ssm', region)
-    s3 = get_client('s3', region)
+        # initialize the client for requests
+        region = get_instance_region()
+        ssm = get_client('ssm', region)
+        s3 = get_client('s3', region)
 
-    # get parameters
-    params = get_parameters_from_namespace(ssm, namespace)
-    app_name = name_from_event_resource(params)
+        # get parameters
+        params = get_parameters_from_namespace(ssm, namespace)
+        app_name = name_from_event_resource(params)
 
-    # save s3 objects to the current directory
-    download_s3_resources(s3, params)
+        # save s3 objects to the current directory
+        download_s3_resources(s3, params)
 
-    # create a properties file and cmd args from params
-    create_properties_file(params)
-    cmdline_args = get_commandline_args(params)
+        # create a properties file and cmd args from params
+        create_properties_file(params)
+        cmdline_args = get_commandline_args(params)
 
-    launch_process(app_name, cmdline_args)
+        launch_process(app_name, cmdline_args)
 
-    logger.info('Process completed successfully.')
+        logger.info('Process completed successfully.')
+    
+    except Exception as e:
+        logger.error(f'Processing encountered an error: {e}')
