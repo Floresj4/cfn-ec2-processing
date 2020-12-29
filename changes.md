@@ -4,6 +4,8 @@
 - Launch the Java Spring application for data processing
 - `event-data` parameter is required to indicate file to process
 - `event-data` is substituted for batch-processor input commandline argument
+- Eliminate duplicate input options from commandline args
+- Install JDK 8 on EC2 instance
 
 ### 0.0.5
 - :trophy: Instance successfully starts and launches batch-init script
