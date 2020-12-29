@@ -105,7 +105,9 @@ def get_commandline_args(params: dict):
     
     # exclude event-resource and change event-data
     for k,v in params.items():
-        if k == 'event-resource':
+
+        # ignore the jar and the input param to replace
+        if k in ['event-resource', 'datafile-path']:
             continue
 
         # change the event-data to what the batch-processor
