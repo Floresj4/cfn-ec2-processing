@@ -26,9 +26,7 @@ def deploy_configuration(props: Properties, nmspce: str):
     nmspce = nmspce if nmspce[0] == '/' else '/' + nmspce
 
     ssm = boto3.client('ssm', config = Config(
-        retries = {
-            'max_attempts': 5
-        }
+        retries = { 'max_attempts': 5 }
     ))
 
     for k in props.keys():
