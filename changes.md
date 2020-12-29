@@ -1,6 +1,9 @@
 # Changes
 
+### 1.0.0
+
 ### 0.0.6
+- :trophy: Successfully tested S3 deployment to EC2 processing 
 - Launch the Java Spring application for data processing
 - `event-data` parameter is required to indicate file to process
 - `event-data` is substituted for batch-processor input commandline argument
