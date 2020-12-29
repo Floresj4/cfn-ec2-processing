@@ -1,7 +1,8 @@
 # Changes
 
 ### 1.0.0
-
+- Removed instance role creation from template.yml.  Instance Role should be managed outside the template and provided as a parameter.
+ 
 ### 0.0.6
 - :trophy: Successfully tested S3 deployment to EC2 processing 
 - Launch the Java Spring application for data processing
