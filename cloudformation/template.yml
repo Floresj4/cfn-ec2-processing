@@ -21,6 +21,9 @@ Parameters:
     InstanceName:
         Type: String
         Description: The instance name configured as a tag
+    InstanceRole:
+        Type: String
+        Description: instance role for processing
     InstanceUserData:
         Type: String
         Description: Script contents to execute on boot
@@ -28,19 +31,8 @@ Parameters:
     VPC:
         Type: String
         Description: Deployment VPC
-    Region:
-        Type: String
-        Description: Deployment region
-        Default: us-east-1
-    AccountId:
-        Type: String
-        Description: Account identifier
-
-# TODO roles and policies should not be defined here
-# TODO fine-tune policies
 
 Resources:
-
     SshSecurityGroup:
         Type: AWS::EC2::SecurityGroup
         Properties:
@@ -52,52 +44,12 @@ Resources:
                 FromPort: 22
             VpcId: !Ref VPC
 
-    S3AccessRole:
-        Type: AWS::IAM::Role
-        Properties:
-            AssumeRolePolicyDocument:
-                Version: 2012-10-17
-                Statement:
-                  - Effect: Allow
-                    Principal:
-                        Service: 
-                          - ec2.amazonaws.com
-                    Action:
-                      - 'sts:AssumeRole'
-            Path: /
-            Policies:
-              - PolicyName: S3AccessPolicy
-                PolicyDocument:
-                    Version: 2012-10-17
-                    Statement:
-                      - Effect: Allow
-                        Action:
-                          - s3:ListBucketMultipartUploads
-                          - s3:ListBucketVersions
-                          - s3:ListBucket
-                          - s3:ListMultipartUploadParts
-                          - s3:GetObject
-                        Resource:
-                          - arn:aws:s3:::floresj4-cfn-ec2-processing
-                          - arn:aws:s3:::*/*
-              - PolicyName: SSMAccessPolicy
-                PolicyDocument:
-                    Version: 2012-10-17
-                    Statement:
-                      - Effect: Allow
-                        Action:
-                          - ssm:GetParameter
-                          - ssm:GetParameters
-                          - ssm:GetParametersByPath
-                        Resource:
-                          - !Join [':', ['arn:aws:ssm', !Ref Region, !Ref AccountId, 'parameter/*']]
-
     BatchProcessingInstanceProfile:
         Type: AWS::IAM::InstanceProfile
         Properties:
             Path: /
             Roles:
-                - !Ref S3AccessRole
+                - !Ref InstanceRole
 
     BatchProcessingInstance:
         Type: AWS::EC2::Instance
