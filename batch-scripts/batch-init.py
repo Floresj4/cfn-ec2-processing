@@ -201,6 +201,7 @@ def name_from_event_resource(params: dict):
 class BatchInitMailer(object):
 
     def __init__(self, namespace: str):
+        logger.info('Initializing Mailer')
         self.namespace = namespace
 
         # get the default no-reply email
@@ -209,22 +210,29 @@ class BatchInitMailer(object):
         
         # enable mailing if both parameters were populated
         self.mail_enabled = self.src_email and self.dest_email
+        if not self.mail_enabled:
+            logger.info('Mailing disabled.  Both src and destination '
+                + 'email parameters must be configured''')
 
     '''
     Get a parameter value or return None
     '''
     def __get_param_value(self, param_name: str):
-        logger.info(f'Querying SSM parameter {param_name}')
+        try:
+            logger.info(f'Querying SSM parameter {param_name}')
 
-        ssm = get_client('ssm')
-        response = ssm.get_parameter(
-            Name = param_name,
-            WithDecryption = False
-        )
+            ssm = get_client('ssm')
+            response = ssm.get_parameter(
+                Name = param_name,
+                WithDecryption = False
+            )
 
-        logger.debug(f'Query response: {response}')
-        return response['Value'] if response else None
-
+            logger.debug(f'Query response: {response}')
+            return response['Parameter']['Value']
+        
+        except Exception as e:
+            logger.error(f'An error occurred querying parameter store: {e}')
+            return None
 
     '''
     Send an email the signal the start of processing
@@ -285,7 +293,9 @@ if __name__ == '__main__':
         ssm = get_client('ssm', region)
         s3 = get_client('s3', region)
 
-        from_address, to_address = get_mail_params(namespace)
+        mailer = BatchInitMailer(namespace)
+
+        # from_address, to_address = get_mail_params(namespace)
 
         # # get parameters
         # params = get_parameters_from_namespace(ssm, namespace)
