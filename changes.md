@@ -1,5 +1,11 @@
 # Changes
 
+### 1.1.0
+- Added email notification on batch-init execution
+- Source and destination emails are parameter store configurable.
+  - Source email must exist as global parameter
+  - Destination email must be provided with namespace
+  - Disable email on absense of either value
 
 ### 1.0.0
 - Removed instance role creation from template.yml.  Instance Role should be managed outside the template and provided as a parameter.
