@@ -24,7 +24,10 @@ An instance role is required that can interact with S3 objects (downloading data
             {
                 "Effect": "Allow",
                 "Action": [
+                    "s3:ListBucketMultipartUploads",
+                    "s3:ListBucketVersions",
                     "s3:ListBucket",
+                    "s3:ListMultipartUploadParts",
                     "s3:GetObject"
                 ],
                 "Resource": [
