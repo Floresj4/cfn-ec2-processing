@@ -197,13 +197,15 @@ class BatchInitMailer(object):
 
         # get the default no-reply email; dest can be a list
         self.src_email = self.__get_param_value('no-reply-email')
-        self.dest_email = self.__get_param_value(f'{namespace}/email').split(',')
+        dest_email = self.__get_param_value(f'{namespace}/email')
         
         # enable mailing if both parameters were populated
-        self.mail_enabled = self.src_email and self.dest_email
+        self.mail_enabled = self.src_email and dest_email
         if not self.mail_enabled:
             logger.info('Mailing disabled.  Both src and destination '
                 + 'email parameters must be configured''')
+        else: # split if enabled, destination can be a list
+            self.dest_email = dest_email.split(',')
 
     '''
     Get a parameter value or return None
