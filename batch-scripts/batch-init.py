@@ -211,6 +211,7 @@ if __name__ == '__main__':
         region = get_instance_region()
         ssm = get_client('ssm', region)
         s3 = get_client('s3', region)
+        ses = get_client('ses', region)
 
         # get parameters
         params = get_parameters_from_namespace(ssm, namespace)
