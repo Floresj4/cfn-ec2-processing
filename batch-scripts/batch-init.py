@@ -290,6 +290,7 @@ if __name__ == '__main__':
         s3 = get_client('s3', region)
 
         mailer = BatchInitMailer(namespace)
+        mailer.send_start()
 
         # # get parameters
         # params = get_parameters_from_namespace(ssm, namespace)
