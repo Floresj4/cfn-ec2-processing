@@ -22,7 +22,7 @@ clients = {}
 '''
 create a boto client instance.
 '''
-def get_client(name: str, region: str):
+def get_client(name: str, region: str = 'us-east-1'):
     if not name in clients:
         clients[name] = boto3.client(name, config = Config(
             region_name = region,
@@ -148,6 +148,15 @@ def get_instance_namespace():
 
 
 '''
+get the from and to email addresses.  From email 'noreply@...'
+will exist in a global space of param store.  The To email will
+be provided along with the processing namespace
+'''
+def get_mail_params(namespace: str):
+    pass
+
+
+'''
 get the region the instance is deployed in.  used
 in configuring the boto3 client(s)
 '''
@@ -187,6 +196,70 @@ def name_from_event_resource(params: dict):
 
 
 '''
+
+'''
+class BatchInitMailer(object):
+
+    def __init__(self, namespace: str):
+        self.namespace = namespace
+
+        # get the default no-reply email
+        self.src_email = self.__get_param_value('no-reply-email')
+        self.dest_email = self.__get_param_value(f'{namespace}/email')
+        
+        # enable mailing if both parameters were populated
+        self.mail_enabled = self.src_email and self.dest_email
+
+    '''
+    Get a parameter value or return None
+    '''
+    def __get_param_value(self, param_name: str):
+        logger.info(f'Querying SSM parameter {param_name}')
+
+        ssm = get_client('ssm')
+        response = ssm.get_parameter(
+            Name = param_name,
+            WithDecryption = False
+        )
+
+        logger.debug(f'Query response: {response}')
+        return response['Value'] if response else None
+
+
+    '''
+    Send an email the signal the start of processing
+    '''
+    # def send_start_email(src_email: str, dest_email: list):
+
+    #     ses = get_client('ses', region)
+    #     response = ses.send_email(
+    #         Source = self.src_email,
+    #         Destination = {
+    #             'ToAddresses': dest_email
+    #         },
+    #         Message = {
+    #             'Subject': {
+    #                 'Data': 'Batch Processing Start',
+    #                 'Charset': 'utf-8'
+    #             },
+    #             'Body': {
+    #                 'Text': {
+    #                     'Data': 'Hello, world.',
+    #                 },
+    #                 'Html': {
+    #                     'Data': '<h3>Hello, world.</h3>'
+    #                 }
+    #             }
+    #         }
+    #     )
+
+    #     logger.info(f'SendMail response {response}')
+
+
+    def send_finish_email():
+        pass
+
+'''
 custom exception for raising and logging
 '''
 class AwsGetParametersByPathError(Exception):
@@ -211,20 +284,21 @@ if __name__ == '__main__':
         region = get_instance_region()
         ssm = get_client('ssm', region)
         s3 = get_client('s3', region)
-        ses = get_client('ses', region)
 
-        # get parameters
-        params = get_parameters_from_namespace(ssm, namespace)
-        app_name = name_from_event_resource(params)
+        from_address, to_address = get_mail_params(namespace)
 
-        # save s3 objects to the current directory
-        download_s3_resources(s3, params)
+        # # get parameters
+        # params = get_parameters_from_namespace(ssm, namespace)
+        # app_name = name_from_event_resource(params)
 
-        # create a properties file and cmd args from params
-        create_properties_file(params)
-        cmdline_args = get_commandline_args(params)
+        # # save s3 objects to the current directory
+        # download_s3_resources(s3, params)
 
-        launch_process(app_name, cmdline_args)
+        # # create a properties file and cmd args from params
+        # create_properties_file(params)
+        # cmdline_args = get_commandline_args(params)
+
+        # launch_process(app_name, cmdline_args)
 
         logger.info('Process completed successfully.')
     
