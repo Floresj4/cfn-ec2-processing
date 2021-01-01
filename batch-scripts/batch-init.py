@@ -195,9 +195,9 @@ class BatchInitMailer(object):
         logger.info('Initializing Mailer')
         self.namespace = namespace
 
-        # get the default no-reply email
+        # get the default no-reply email; dest can be a list
         self.src_email = self.__get_param_value('no-reply-email')
-        self.dest_email = self.__get_param_value(f'{namespace}/email')
+        self.dest_email = self.__get_param_value(f'{namespace}/email').split(',')
         
         # enable mailing if both parameters were populated
         self.mail_enabled = self.src_email and self.dest_email
@@ -228,31 +228,34 @@ class BatchInitMailer(object):
     '''
     Send an email the signal the start of processing
     '''
-    # def send_start_email(src_email: str, dest_email: list):
+    def send_start(self):
+        try:
+            ses = get_client('ses', region)
+            response = ses.send_email(
+                Source = self.src_email,
+                Destination = {
+                    'ToAddresses': self.dest_email
+                },
+                Message = {
+                    'Subject': {
+                        'Data': 'Batch Processing Start',
+                        'Charset': 'utf-8'
+                    },
+                    'Body': {
+                        'Text': {
+                            'Data': 'Hello, world.',
+                        },
+                        'Html': {
+                            'Data': '<h3>Hello, world.</h3>'
+                        }
+                    }
+                }
+            )
 
-    #     ses = get_client('ses', region)
-    #     response = ses.send_email(
-    #         Source = self.src_email,
-    #         Destination = {
-    #             'ToAddresses': dest_email
-    #         },
-    #         Message = {
-    #             'Subject': {
-    #                 'Data': 'Batch Processing Start',
-    #                 'Charset': 'utf-8'
-    #             },
-    #             'Body': {
-    #                 'Text': {
-    #                     'Data': 'Hello, world.',
-    #                 },
-    #                 'Html': {
-    #                     'Data': '<h3>Hello, world.</h3>'
-    #                 }
-    #             }
-    #         }
-    #     )
-
-    #     logger.info(f'SendMail response {response}')
+            logger.info(f'SendMail response {response}')
+        
+        except Exception as e:
+            logger.error(f'An error occurred sending start email: {e}')
 
 
     def send_finish_email(self):
