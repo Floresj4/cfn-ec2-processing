@@ -148,15 +148,6 @@ def get_instance_namespace():
 
 
 '''
-get the from and to email addresses.  From email 'noreply@...'
-will exist in a global space of param store.  The To email will
-be provided along with the processing namespace
-'''
-def get_mail_params(namespace: str):
-    pass
-
-
-'''
 get the region the instance is deployed in.  used
 in configuring the boto3 client(s)
 '''
@@ -196,7 +187,7 @@ def name_from_event_resource(params: dict):
 
 
 '''
-
+Orchestrate mailing through this class
 '''
 class BatchInitMailer(object):
 
@@ -264,7 +255,7 @@ class BatchInitMailer(object):
     #     logger.info(f'SendMail response {response}')
 
 
-    def send_finish_email():
+    def send_finish_email(self):
         pass
 
 '''
@@ -294,8 +285,6 @@ if __name__ == '__main__':
         s3 = get_client('s3', region)
 
         mailer = BatchInitMailer(namespace)
-
-        # from_address, to_address = get_mail_params(namespace)
 
         # # get parameters
         # params = get_parameters_from_namespace(ssm, namespace)
