@@ -277,7 +277,7 @@ class BatchInitMailer(object):
                 Source = self.src_email,
                 Destination = { 'ToAddresses': self.dest_email },
                 Message = {
-                    'Subject': { 'Data': 'Batch Processing Started' },
+                    'Subject': { 'Data': f'Batch Processing {app_name}' },
                     'Body': {
                         'Text': { 'Data': self.__get_text_body(curr_time, self.namespace, app_name, cmdline_args), },
                         'Html': { 'Data': self.__get_html_body(curr_time, self.namespace, app_name, cmdline_args) }
@@ -303,7 +303,7 @@ class BatchInitMailer(object):
                 Source = self.src_email,
                 Destination = { 'ToAddresses': self.dest_email },
                 Message = {
-                    'Subject': { 'Data': 'Batch Processed Complete' },
+                    'Subject': { 'Data': f'Batch Processing {app_name}' },
                     'Body': {
                         'Text': { 'Data': f'Batch Processing Completed in {duration:0.4f} seconds' },
                         'Html': { 'Data': f'<h3>Batch Processing Completed <small>in {duration:0.4f} seconds</small></h3>' }
