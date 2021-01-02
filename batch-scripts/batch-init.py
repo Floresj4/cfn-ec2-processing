@@ -231,6 +231,9 @@ class BatchInitMailer(object):
     Send an email the signal the start of processing
     '''
     def send_start(self):
+        if not self.mail_enabled:
+            return
+
         try:
             ses = get_client('ses', region)
             response = ses.send_email(
@@ -239,16 +242,14 @@ class BatchInitMailer(object):
                     'ToAddresses': self.dest_email
                 },
                 Message = {
-                    'Subject': {
-                        'Data': 'Batch Processing Start',
-                        'Charset': 'utf-8'
-                    },
+                    'Subject': { 'Data': 'Batch Processing Started', },
                     'Body': {
                         'Text': {
                             'Data': 'Hello, world.',
                         },
                         'Html': {
-                            'Data': '<h3>Hello, world.</h3>'
+                            'Data': '''
+                            <h3>Hello, world.</h3>'''
                         }
                     }
                 }
