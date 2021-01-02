@@ -8,11 +8,6 @@ Objectives
 
 Change information can be found [here](./changes.md).
 
-##### TODO
-
-- `moto` to mock test create_stack
-- remove role creation from cloudformation template
-
 ## Folders
 [batch-scripts](./batch-scripts/) - scripts for configuring and launching
 
