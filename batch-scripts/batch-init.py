@@ -209,6 +209,38 @@ class BatchInitMailer(object):
             self.dest_email = dest_email.split(',')
 
     '''
+    Assemble an HTML body with a link to the SSM parameters that
+    produced the commandline arguments
+    '''
+    def __get_html_body(self, curr_time: str, namespace: str, app_name: str, cmdline_args: str):
+        # assemble a link to the parameter store entries
+        region = 'us-east-1'
+        ssm_link_url = ''.join([
+            f'https://console.aws.amazon.com/systems-manager/parameters/?region={region}',
+            '&tab=Table#list_parameter_filters=Path:Recursive:{}'.format(quote_plus(namespace))
+        ])
+
+        return ''.join([
+            f'<h3>Batch Processing Started <small>{curr_time}</small></h3>',
+            '<ul>',
+                f"<li>Namespace: <a href='{ssm_link_url}'>{namespace}</a></li>",
+                f'<li>Application: {app_name}</li>',
+                f'<li>Commandline Args: {cmdline_args}</li>'
+            '</ul>'
+        ])
+
+    '''
+    Assemble the Text body
+    '''
+    def __get_text_body(self, curr_time: str, namespace: str, app_name: str, cmdline_args: str):
+        return '\n'.join([
+            f'Batch Processing Started: {curr_time}',
+                f'\t- Namespace: {namespace}',
+                f'\t- Application: {app_name}',
+                f'\t- Commandline Args: {cmdline_args}'
+        ])
+
+    '''
     Get a parameter value or return None
     '''
     def __get_param_value(self, param_name: str):
@@ -237,13 +269,6 @@ class BatchInitMailer(object):
 
         # get the current time and setup link
         curr_time = datetime.datetime.utcnow().isoformat()
-        
-        region = 'us-east-1'
-        namespace = self.namespace
-        ssm_link_url = ''.join([
-            f'https://console.aws.amazon.com/systems-manager/parameters/?region={region}',
-            '&tab=Table#list_parameter_filters=Path:Recursive:{}'.format(quote_plus(namespace))
-        ])
 
         try:
             ses = get_client('ses', region)
@@ -253,24 +278,11 @@ class BatchInitMailer(object):
                 Message = {
                     'Subject': { 'Data': 'Batch Processing Started', },
                     'Body': {
-                        'Text': {
-                            'Data': 'Hello, world.',
-                        },
-                        'Html': {
-                            'Data': ''.join([
-                                f'<h3>Batch Processing Started <small>{curr_time}</small></h3>',
-                                '<ul>',
-                                    f"<li>Namespace: <a href='{ssm_link_url}'>{namespace}</a></li>",
-                                    f'<li>Application: {app_name}</li>',
-                                    f'<li>Commandline Args: {cmdline_args}</li>'
-                                '</ul>'
-                            ])
-                        }
+                        'Text': { 'Data': self.__get_text_body(curr_time, self.namespace, app_name, cmdline_args), },
+                        'Html': { 'Data': self.__get_html_body(curr_time, self.namespace, app_name, cmdline_args) }
                     }
                 }
             )
-
-# %2Fbatch-processor-001-SNAPSHOT
 
             logger.info(f'SendMail response {response}')
         
