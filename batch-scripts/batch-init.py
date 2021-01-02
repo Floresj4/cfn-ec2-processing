@@ -1,4 +1,4 @@
-import logging, os
+import logging, os, datetime
 import argparse
 import boto3, uuid
 import subprocess
@@ -230,17 +230,18 @@ class BatchInitMailer(object):
     '''
     Send an email the signal the start of processing
     '''
-    def send_start(self):
+    def send_start(self, params: list, app_name: str, cmdline_args: str):
         if not self.mail_enabled:
             return
+
+        # get the current time and setup params
+        curr_time = datetime.datetime.utcnow().isoformat()
 
         try:
             ses = get_client('ses', region)
             response = ses.send_email(
                 Source = self.src_email,
-                Destination = {
-                    'ToAddresses': self.dest_email
-                },
+                Destination = { 'ToAddresses': self.dest_email },
                 Message = {
                     'Subject': { 'Data': 'Batch Processing Started', },
                     'Body': {
@@ -248,12 +249,20 @@ class BatchInitMailer(object):
                             'Data': 'Hello, world.',
                         },
                         'Html': {
-                            'Data': '''
-                            <h3>Hello, world.</h3>'''
+                            'Data': ''.join([
+                            f'<h3>Batch Processing Started <small>{curr_time}</small></h3>',
+                            '<ul>',
+                                '<li>Namespace: <a href=''>{}</a></li>'.format(self.namespace),
+                                f'<li>Application: {app_name}</li>',
+                                f'<li>Commandline Args: {cmdline_args}</li>'
+                            '</ul>'
+                            ])
                         }
                     }
                 }
             )
+
+# https://console.aws.amazon.com/systems-manager/parameters/?region=us-east-1&tab=Table#list_parameter_filters=Path:Recursive:%2Fbatch-processor-001-SNAPSHOT
 
             logger.info(f'SendMail response {response}')
         
@@ -290,19 +299,19 @@ if __name__ == '__main__':
         ssm = get_client('ssm', region)
         s3 = get_client('s3', region)
 
-        mailer = BatchInitMailer(namespace)
-        mailer.send_start()
-
         # # get parameters
-        # params = get_parameters_from_namespace(ssm, namespace)
-        # app_name = name_from_event_resource(params)
+        params = get_parameters_from_namespace(ssm, namespace)
+        app_name = name_from_event_resource(params)
 
         # # save s3 objects to the current directory
-        # download_s3_resources(s3, params)
+        download_s3_resources(s3, params)
 
         # # create a properties file and cmd args from params
-        # create_properties_file(params)
-        # cmdline_args = get_commandline_args(params)
+        create_properties_file(params)
+        cmdline_args = get_commandline_args(params)
+
+        mailer = BatchInitMailer(namespace)
+        mailer.send_start(params, app_name, cmdline_args)
 
         # launch_process(app_name, cmdline_args)
 
