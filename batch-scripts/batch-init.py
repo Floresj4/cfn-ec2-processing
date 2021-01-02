@@ -3,6 +3,7 @@ import argparse
 import boto3, uuid
 import subprocess
 import requests
+import time
 
 from botocore.config import Config
 from urllib.parse import quote_plus
@@ -261,7 +262,7 @@ class BatchInitMailer(object):
             return None
 
     '''
-    Send an email the signal the start of processing
+    Send an email to signal the start of processing
     '''
     def send_start(self, app_name: str, cmdline_args: str):
         if not self.mail_enabled:
@@ -276,7 +277,7 @@ class BatchInitMailer(object):
                 Source = self.src_email,
                 Destination = { 'ToAddresses': self.dest_email },
                 Message = {
-                    'Subject': { 'Data': 'Batch Processing Started', },
+                    'Subject': { 'Data': 'Batch Processing Started' },
                     'Body': {
                         'Text': { 'Data': self.__get_text_body(curr_time, self.namespace, app_name, cmdline_args), },
                         'Html': { 'Data': self.__get_html_body(curr_time, self.namespace, app_name, cmdline_args) }
@@ -289,9 +290,31 @@ class BatchInitMailer(object):
         except Exception as e:
             logger.error(f'An error occurred sending start email: {e}')
 
+    '''
+    Send an email to signal the end of processing
+    '''
+    def send_complete(self, app_name: str, duration: float):
+        if not self.mail_enabled:
+            return
+        
+        try:
+            ses = get_client('ses', region)
+            response = ses.send_email(
+                Source = self.src_email,
+                Destination = { 'ToAddresses': self.dest_email },
+                Message = {
+                    'Subject': { 'Data': 'Batch Processed Complete' },
+                    'Body': {
+                        'Text': { 'Data': f'Batch Processing Completed in {duration:0.4f} seconds' },
+                        'Html': { 'Data': f'<h3>Batch Processing Completed <small>in {duration:0.4f} seconds</small></h3>' }
+                    }
+                }
+            )
 
-    def send_finish_email(self):
-        pass
+            logger.info(f'SendMail response {response}')
+
+        except Exception as e:
+            logger.error(f'An error occurred sending completion email: {e}')
 
 '''
 custom exception for raising and logging
@@ -309,6 +332,7 @@ class AwsGetParametersByPathError(Exception):
 '''
 if __name__ == '__main__':
     try:
+        start = time.perf_counter()
         logger.info('Gathering configuration...')
 
         namespace = get_instance_namespace()
@@ -334,6 +358,9 @@ if __name__ == '__main__':
         mailer.send_start(app_name, cmdline_args)
 
         # launch_process(app_name, cmdline_args)
+
+        duration = start - time.perf_counter()
+        mailer.send_complete(app_name, duration)
 
         logger.info('Process completed successfully.')
     
