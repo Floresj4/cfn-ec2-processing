@@ -359,7 +359,7 @@ if __name__ == '__main__':
 
         # launch_process(app_name, cmdline_args)
 
-        duration = start - time.perf_counter()
+        duration = time.perf_counter() - start
         mailer.send_complete(app_name, duration)
 
         logger.info('Process completed successfully.')
