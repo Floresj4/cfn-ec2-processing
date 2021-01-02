@@ -357,7 +357,7 @@ if __name__ == '__main__':
         mailer = BatchInitMailer(namespace)
         mailer.send_start(app_name, cmdline_args)
 
-        # launch_process(app_name, cmdline_args)
+        launch_process(app_name, cmdline_args)
 
         duration = time.perf_counter() - start
         mailer.send_complete(app_name, duration)
