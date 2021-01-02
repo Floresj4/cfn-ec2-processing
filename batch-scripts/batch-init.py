@@ -5,6 +5,7 @@ import subprocess
 import requests
 
 from botocore.config import Config
+from urllib.parse import quote_plus
 
 '''
 initialize logger
@@ -230,12 +231,19 @@ class BatchInitMailer(object):
     '''
     Send an email the signal the start of processing
     '''
-    def send_start(self, params: list, app_name: str, cmdline_args: str):
+    def send_start(self, app_name: str, cmdline_args: str):
         if not self.mail_enabled:
             return
 
-        # get the current time and setup params
+        # get the current time and setup link
         curr_time = datetime.datetime.utcnow().isoformat()
+        
+        region = 'us-east-1'
+        namespace = self.namespace
+        ssm_link_url = ''.join([
+            f'https://console.aws.amazon.com/systems-manager/parameters/?region={region}',
+            '&tab=Table#list_parameter_filters=Path:Recursive:{}'.format(quote_plus(namespace))
+        ])
 
         try:
             ses = get_client('ses', region)
@@ -250,19 +258,19 @@ class BatchInitMailer(object):
                         },
                         'Html': {
                             'Data': ''.join([
-                            f'<h3>Batch Processing Started <small>{curr_time}</small></h3>',
-                            '<ul>',
-                                '<li>Namespace: <a href=''>{}</a></li>'.format(self.namespace),
-                                f'<li>Application: {app_name}</li>',
-                                f'<li>Commandline Args: {cmdline_args}</li>'
-                            '</ul>'
+                                f'<h3>Batch Processing Started <small>{curr_time}</small></h3>',
+                                '<ul>',
+                                    f"<li>Namespace: <a href='{ssm_link_url}'>{namespace}</a></li>",
+                                    f'<li>Application: {app_name}</li>',
+                                    f'<li>Commandline Args: {cmdline_args}</li>'
+                                '</ul>'
                             ])
                         }
                     }
                 }
             )
 
-# https://console.aws.amazon.com/systems-manager/parameters/?region=us-east-1&tab=Table#list_parameter_filters=Path:Recursive:%2Fbatch-processor-001-SNAPSHOT
+# %2Fbatch-processor-001-SNAPSHOT
 
             logger.info(f'SendMail response {response}')
         
@@ -311,7 +319,7 @@ if __name__ == '__main__':
         cmdline_args = get_commandline_args(params)
 
         mailer = BatchInitMailer(namespace)
-        mailer.send_start(params, app_name, cmdline_args)
+        mailer.send_start(app_name, cmdline_args)
 
         # launch_process(app_name, cmdline_args)
 
