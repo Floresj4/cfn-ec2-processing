@@ -39,15 +39,16 @@ to request all parameters at once.
 '''
 def get_parameters_from_namespace(ssm, namespace: str):
 
-    # get parameters from /some/namespace/path
-    response = ssm.get_parameters_by_path(
-        Path = namespace,
-        Recursive = True,
-        WithDecryption = False
-    )
-
-    if not response:
-        raise AwsGetParametersByPathError(f'{namespace} request failed.')
+    try:
+        # get parameters from /some/namespace/path
+        response = ssm.get_parameters_by_path(
+            Path = namespace,
+            Recursive = True,
+            WithDecryption = False
+        )
+    except Exception as e:
+        logger.error(f'An error occurred querying parameters in the namespace {namespace}')
+        raise e
 
     params = {}
     nmspce_to_remove = namespace + '/'
@@ -315,12 +316,6 @@ class BatchInitMailer(object):
 
         except Exception as e:
             logger.error(f'An error occurred sending completion email: {e}')
-
-'''
-custom exception for raising and logging
-'''
-class AwsGetParametersByPathError(Exception):
-    pass
 
 
 '''
