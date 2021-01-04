@@ -18,8 +18,10 @@ def initialize_logger(name: str = __name__):
     logger.setLevel(os.getenv('LOGGING_LEVEL', 'DEBUG'))
     return logger
 
+
 logger = initialize_logger()
 clients = {}
+
 
 '''
 create a boto client instance.
@@ -32,6 +34,7 @@ def get_client(name: str, region: str = 'us-east-1'):
         ))
 
     return clients[name]
+
 
 '''
 get parameters from namespace uses the get_parameters_by_path api
@@ -49,7 +52,7 @@ def get_parameters_from_namespace(ssm, namespace: str):
         )
 
     except Exception as e:
-        logger.error(f'An error occurred querying parameters in the namespace {namespace}')
+        logger.error(f'An error occurred querying parameters in the namespace {namespace}: {e}')
         raise e
 
     params = {}
@@ -68,16 +71,21 @@ def get_parameters_from_namespace(ssm, namespace: str):
     logger.info('Get_parameters_by_path returned {} params'.format(len(params)))
     return params
 
+
 '''
 create the instance properties file.  outputs locally for now
 '''
 def create_properties_file(params: dict):
-    logger.info('Creating instance properties file...')
-    with open('./application.properties', 'w') as out:
-        for key, value in params.items():
-            out_line = f'{key}={value}'
-            out.write(out_line + '\n')
-            logger.debug(out_line)
+    try:
+        logger.info('Creating instance properties file...')
+        with open('./application.properties', 'w') as out:
+            for key, value in params.items():
+                out_line = f'{key}={value}'
+                out.write(out_line + '\n')
+                logger.debug(out_line)
+
+    except Exception as e:
+        logger.warning(f'An error occurred generating local properties file {e}')
 
 
 '''
@@ -124,8 +132,7 @@ def get_commandline_args(params: dict):
             cmdline_args.append(f'--{k}={v}')
 
     cmdline_args = ' '.join(cmdline_args)
-    logger.info('Generated commandline arguments to append:')
-    logger.info(f'{cmdline_args}')
+    logger.info(f'Generated commandline arguments to append: {cmdline_args}')
     return cmdline_args
 
 
@@ -147,10 +154,13 @@ get the namespace provided by launch.  This value will
 be in a text file at the same place as this script
 '''
 def get_instance_namespace():
-    # the value is key=value
-    with open('namespace', 'r') as namefile:
-        return namefile.readline().rstrip('\n').split('=')[1]
+    try:
+        # the value is key=value
+        with open('namespace', 'r') as namefile:
+            return namefile.readline().rstrip('\n').split('=')[1]
 
+    except Exception as e:
+        logger.error(f'An error occurred reading the namespace file: {e}')
 
 '''
 get the region the instance is deployed in.  used
