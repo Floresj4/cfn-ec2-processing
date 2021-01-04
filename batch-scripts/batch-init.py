@@ -340,7 +340,7 @@ if __name__ == '__main__':
         ssm = get_client('ssm', region)
         s3 = get_client('s3', region)
 
-        # # get parameters
+        # get parameters and application name
         params = get_parameters_from_namespace(ssm, namespace)
         app_name = name_from_event_resource(params)
 
@@ -351,11 +351,14 @@ if __name__ == '__main__':
         create_properties_file(params)
         cmdline_args = get_commandline_args(params)
 
+        # initialize mailer for start and stop notifications
         mailer = BatchInitMailer(namespace)
         mailer.send_start(app_name, cmdline_args)
 
+        # execute the java process
         launch_process(app_name, cmdline_args)
 
+        # take the duration and send completion email
         duration = time.perf_counter() - start
         mailer.send_complete(app_name, duration)
 
