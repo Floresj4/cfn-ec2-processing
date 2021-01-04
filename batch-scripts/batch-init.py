@@ -41,11 +41,13 @@ def get_parameters_from_namespace(ssm, namespace: str):
 
     try:
         # get parameters from /some/namespace/path
+        logger.info(f'Querying parameters in {namespace} namespace...')
         response = ssm.get_parameters_by_path(
             Path = namespace,
             Recursive = True,
             WithDecryption = False
         )
+
     except Exception as e:
         logger.error(f'An error occurred querying parameters in the namespace {namespace}')
         raise e
