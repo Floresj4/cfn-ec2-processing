@@ -332,6 +332,7 @@ if __name__ == '__main__':
         start = time.perf_counter()
         logger.info('Gathering configuration...')
 
+        # namespace should be added via EC2 userdata
         namespace = get_instance_namespace()
         logger.info(f'Namespace: {namespace}')
 
@@ -344,10 +345,10 @@ if __name__ == '__main__':
         params = get_parameters_from_namespace(ssm, namespace)
         app_name = name_from_event_resource(params)
 
-        # # save s3 objects to the current directory
+        # save s3 objects to the current directory
         download_s3_resources(s3, params)
 
-        # # create a properties file and cmd args from params
+        # create a properties file and cmd args from params
         create_properties_file(params)
         cmdline_args = get_commandline_args(params)
 
