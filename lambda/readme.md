@@ -73,3 +73,24 @@ This policy resource is intentionally permissive and should be further refined a
             }
         ]
     }
+
+#### CloudFormation Policy
+This policy resource is intentionally permissive and should be further refined at the point of implementation.
+
+    {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "cloudformation:CreateStack",
+                    "cloudformation:DescribeStacks",
+                    "cloudformation:DescribeStackEvents",
+                    "cloudformation:DescribeStackResources",
+                    "cloudformation:GetTemplate",
+                    "cloudformation:ValidateTemplate"
+                ],
+                "Resource": "arn:aws:cloudformation:us-east-1:ACCOUNT_ID_HERE:stack/*"
+            }
+        ]
+    }
