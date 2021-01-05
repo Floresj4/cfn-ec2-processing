@@ -58,7 +58,18 @@ The output directory when the builder container completes.
 
 The Dockerfile section on the main page describes the build process.
 
+#### SSM Policy
+This policy resource is intentionally permissive and should be further refined at the point of implementation.
 
-##### TODO
-
-- `moto` to mock test create_stack
+    {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "ssm:PutParameter"
+                ],
+                "Resource": "arn:aws:ssm:us-east-1:ACCOUNT_ID_HERE:parameter/*"
+            }
+        ]
+    }
