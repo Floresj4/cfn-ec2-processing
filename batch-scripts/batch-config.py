@@ -17,6 +17,7 @@ def initialize_logger(name: str = __name__):
 
 logger = initialize_logger()
 
+
 '''
 Deploy configuration.  Iterate properties and upload them to
 a Parameter Store path.
@@ -29,22 +30,25 @@ def deploy_configuration(props: Properties, nmspce: str):
         retries = { 'max_attempts': 5 }
     ))
 
-    for k in props.keys():
-        # create complete path and upload
-        param_path = f'{nmspce}/{k}'
+    try:
 
-        response = ssm.put_parameter(
-            Name = param_path,
-            Value = props[k].data,
-            Type = 'String',
-            Overwrite = True
-        )
+        for k in props.keys():
+            # create complete path and upload
+            param_path = f'{nmspce}/{k}'
 
-        if not response:
-            raise AwsPutParameterError(f'response returned {response}')
+            response = ssm.put_parameter(
+                Name = param_path,
+                Value = props[k].data,
+                Type = 'String',
+                Overwrite = True
+            )
 
-        logger.debug('Parameter {} version {} upload complete'.
-            format(param_path, response['Version']))
+            version = response['Version']
+            logger.debug(f'Parameter {param_path} version {version} upload complete')
+
+    except Exception as e:
+        raise e
+
 
 '''
 load arguments required by application
@@ -73,10 +77,6 @@ def load_properties(args):
     return props
 
 
-class AwsPutParameterError(Exception):
-    pass
-
-
 '''
 If the batch application uses a local configuration file, take
 the contents and deploy to AWS Parameter store.  The file can
@@ -97,4 +97,4 @@ if __name__ == '__main__':
         logger.info('Migration completed successfully.')
 
     except Exception as e:
-        logger.error(str(e))
+        logger.error(f'An error occurred deploying configuration: {e}')
