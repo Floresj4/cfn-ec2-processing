@@ -86,7 +86,7 @@ for commandline usage.
 if __name__ == '__main__':
 
     try:
-        logger.info('Migrating configuration...')
+        logger.info('Deploying configuration...')
 
         args = init_arguments()
         nmspce = args.namespace
@@ -94,7 +94,7 @@ if __name__ == '__main__':
         properties = load_properties(args)
         deploy_configuration(properties, nmspce)
 
-        logger.info('Migration completed successfully.')
+        logger.info('Deployment completed successfully.')
 
     except Exception as e:
         logger.error(f'An error occurred deploying configuration: {e}')
