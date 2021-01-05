@@ -17,6 +17,7 @@ params.yml is intentional excluded. See [/API_Parameter.html](https://docs.aws.a
 An instance role is required that can interact with S3 objects (downloading data files and the `event-resource` jar) and Parameter Store entries (command line arguments for the application).  
 
 #### S3 Policy
+This policy resource is intentionally permissive and should be further refined at the point of iplementation.
 
     {
         "Version": "2012-10-17",
@@ -38,6 +39,7 @@ An instance role is required that can interact with S3 objects (downloading data
     }
 
 #### SSM Policy
+This policy resource is intentionally permissive and should be further refined  at the point of implementation.
 
     {
         "Version": "2012-10-17",
