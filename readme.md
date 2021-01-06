@@ -3,7 +3,8 @@
 An exploratory project to launch an EC2 instance and begin a batch processing job based on some trigger event.
 
 Objectives
- - A new release of the batch component will trigger processing
+ - A new release of the batch component will trigger processing via upload to S3
+ - AWS Lambda will launch and configure an EC2 instance
  - Options to the processing event can be externalized and easily mananged between events
 
 Change information can be found [here](./changes.md).
