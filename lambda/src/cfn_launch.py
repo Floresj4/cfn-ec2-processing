@@ -20,7 +20,11 @@ def lambda_handler(event, context):
         # stackname will be the object creating the event
         bucket, key = cfn.get_event_info(event)
         stack_name, stack_namespace = cfn.get_attributes_from_key(key)
+        
+        # update the namespace to contain the bucket name
+        stack_namespace = f'/{bucket}' + stack_namespace
 
+        # put the event resource param for the instance to download
         cfn.put_event_resource_param(stack_namespace, bucket, key)
 
         # get template body from S3
