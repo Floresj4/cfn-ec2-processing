@@ -61,9 +61,8 @@ def put_event_resource_param(namespace: str, bucket: str, key: str):
 '''
 For now, handle a maven, semantic versioned, jar.  Get the stack
 name and key from the resource which causes creation.
-TODO prevent root namespace. 
 '''
-def stack_name_from_prefix(key: str):
+def get_attributes_from_key(key: str):
     stack_name = key
     stack_namespace = ''
 

@@ -19,7 +19,7 @@ def lambda_handler(event, context):
         # there could be multiple records...
         # stackname will be the object creating the event
         bucket, key = cfn.get_event_info(event)
-        stack_name, stack_namespace = cfn.stack_name_from_prefix(key)
+        stack_name, stack_namespace = cfn.get_attributes_from_key(key)
 
         cfn.put_event_resource_param(stack_namespace, bucket, key)
 
