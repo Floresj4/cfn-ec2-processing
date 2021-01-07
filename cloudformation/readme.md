@@ -39,7 +39,7 @@ This policy resource is intentionally permissive and should be further refined a
     }
 
 #### SSM Policy
-This policy resource is intentionally permissive and should be further refined  at the point of implementation.
+This policy resource is intentionally permissive and should be further refined at the point of implementation.
 
     {
         "Version": "2012-10-17",
@@ -54,6 +54,23 @@ This policy resource is intentionally permissive and should be further refined  
                 "Resource": [
                     "arn:aws:ssm:us-east-1:ACCOUNT_ID_HERE:parameter/*"
                 ]
+            }
+        ]
+    }
+
+#### SES Policy
+This policy resource is intentionally permissive and should be further refined at the point of implementation.
+
+    {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "ses:SendEmail",
+                    "ses:SendRawEmail"
+                ],
+                "Resource": "*"
             }
         ]
     }
