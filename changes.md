@@ -1,5 +1,9 @@
 # Changes
 
+### 1.2.0
+- Add s3 bucket name to parameter store namespace.
+  - provides a root for policy resource constraints
+
 ### 1.1.0
 - Added email notification on batch-init execution
 - Source and destination emails are parameter store configurable.
