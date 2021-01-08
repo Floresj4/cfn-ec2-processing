@@ -104,6 +104,7 @@ def get_attributes_from_key(key: str):
         stack_name = key[i : -4].replace('.', '')
         stack_namespace = key[:i]
 
+        # TODO do not use the jar name for root uploads anymore
         if not stack_namespace or stack_namespace == '/':
             stack_namespace = f'/{stack_name}'
         elif not stack_namespace[0] == '/':
