@@ -55,8 +55,10 @@ def get_parameters_from_namespace(ssm, namespace: str):
         logger.error(f'An error occurred querying parameters in the namespace {namespace}: {e}')
         raise e
 
+    # append a trailing '/' for creating param dict
+    nmspce_to_remove = namespace if namespace[-1:] == '/' else namespace + '/'
+
     params = {}
-    nmspce_to_remove = namespace + '/'
     for p in response['Parameters']:
         # remove the namespace that was added
         name_only = p['Name'].replace(nmspce_to_remove, '')
