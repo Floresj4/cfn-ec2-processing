@@ -24,6 +24,9 @@ def lambda_handler(event, context):
         # update the namespace to contain the bucket name
         stack_namespace = f'/{bucket}' + stack_namespace
 
+        # fail if no params, especially event-data
+        cfn.check_namespace_parameters(stack_namespace)
+
         # put the event resource param for the instance to download
         cfn.put_event_resource_param(stack_namespace, bucket, key)
 
