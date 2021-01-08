@@ -1,5 +1,8 @@
 # Changes
 
+### 1.3.0
+- Check for the existence of parameters before stack creation.  At least `event-data` must exist.
+
 ### 1.2.0
 - Add s3 bucket name to parameter store namespace.
   - provides a root for policy resource constraints
