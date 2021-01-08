@@ -23,6 +23,8 @@ check for the existence of parameters at a particular
 namespace.  fail if none are present
 '''
 def check_namespace_parameters(namespace: str):
+    logger.info(f'Checking existence of event-data in {namespace} parameters')
+
     try:
         ssm = boto3.client('ssm')
         response = ssm.get_parameters_by_path(
@@ -34,6 +36,7 @@ def check_namespace_parameters(namespace: str):
         # event-data needs to exist, at least
         for param in response['Parameters']:
             if param['Name'].endswith('event-data'):
+                logger.info('{} parameter found.'.format(param['Name']))
                 return
         
         # fail if event-data wasn't set
