@@ -33,16 +33,6 @@ Parameters:
         Description: Deployment VPC
 
 Resources:
-    SshSecurityGroup:
-        Type: AWS::EC2::SecurityGroup
-        Properties:
-            GroupDescription: Simple SSH security group
-            SecurityGroupIngress:
-                CidrIp: 0.0.0.0/0
-                IpProtocol: tcp
-                ToPort: 22
-                FromPort: 22
-            VpcId: !Ref VPC
 
     BatchProcessingInstanceProfile:
         Type: AWS::IAM::InstanceProfile
@@ -59,7 +49,7 @@ Resources:
             KeyName: !Ref InstanceKeyPair
             SubnetId: !Ref InstanceSubnetId
             SecurityGroupIds:
-                - !Ref SshSecurityGroup
+                - sg-04f46cd06fd1b653d
             IamInstanceProfile: !Ref BatchProcessingInstanceProfile
             UserData: !Ref InstanceUserData
             Tags:
