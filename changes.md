@@ -1,5 +1,8 @@
 # Changes
 
+### 1.3.1
+- Security group configuration in template.yml references a pre-existing group instead of allowing creation.
+
 ### 1.3.0
 - Check for the existence of parameters before stack creation.  At least `event-data` must exist.
 
