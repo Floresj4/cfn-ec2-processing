@@ -58,12 +58,49 @@ The output directory when the builder container completes.
 
 The Dockerfile section on the main page describes the build process.
 
+#### S3 Policy
+This policy resource is intentionally permissive and should be further refined at the point of implementation.
+
+#### S3 Policy
+This policy resource is intentionally permissive and should be further refined at the point of implementation.
+
+    {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "s3:ListBucketMultipartUploads",
+                    "s3:ListBucketVersions",
+                    "s3:ListBucket",
+                    "s3:ListMultipartUploadParts",
+                    "s3:GetObject"
+                ],
+                "Resource": [
+                    "arn:aws:s3:::BUCKET_NAME_HERE",
+                    "arn:aws:s3:::BUCKET_NAME_HERE/*"
+                ]
+            }
+        ]
+    }
+
 #### SSM Policy
 This policy resource is intentionally permissive and should be further refined at the point of implementation.
 
     {
         "Version": "2012-10-17",
         "Statement": [
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "ssm:GetParameter",
+                    "ssm:GetParameters",
+                    "ssm:GetParametersByPath"
+                ],
+                "Resource": [
+                    "arn:aws:ssm:us-east-1:ACCOUNT_ID_HERE:parameter/*"
+                ]
+            },
             {
                 "Effect": "Allow",
                 "Action": [
@@ -128,6 +165,15 @@ This policy resource is intentionally permissive and should be further refined a
                     "iam:PassRole"
                 ],
                 "Resource": "arn:aws:iam::ACCOUNT_ID_HERE:role/cfnec2-instance-role"
+            },
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "ses:SendEmail",
+                    "ses:SendTemplatedEmail",
+                    "ses:SendRawEmail"
+                ],
+                "Resource": "arn:aws:ses:*:ACCOUNT_ID_HERE:identity/*"
             }
         ]
     }
