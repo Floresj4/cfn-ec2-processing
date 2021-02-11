@@ -83,14 +83,51 @@ This policy resource is intentionally permissive and should be further refined a
             {
                 "Effect": "Allow",
                 "Action": [
-                    "cloudformation:CreateStack",
-                    "cloudformation:DescribeStacks",
-                    "cloudformation:DescribeStackEvents",
-                    "cloudformation:DescribeStackResources",
-                    "cloudformation:GetTemplate",
-                    "cloudformation:ValidateTemplate"
+                    "cloudformation:ContinueUpdateRollback",
+                    "cloudformation:DeregisterType",
+                    "cloudformation:ExecuteChangeSet",
+                    "cloudformation:RegisterType",
+                    "cloudformation:SignalResource",
+                    "cloudformation:Delete*",
+                    "cloudformation:Set*",
+                    "cloudformation:Create*",
+                    "cloudformation:Update*",
+                    "cloudformation:Stop*",
+                    "cloudformation:Cancel*"
                 ],
                 "Resource": "arn:aws:cloudformation:us-east-1:ACCOUNT_ID_HERE:stack/*"
+            },
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "cloudformation:Describe*"
+                ],
+                "Resource": "arn:aws:cloudformation:us-east-1:ACCOUNT_ID_HERE:stack/*"
+            },
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "ec2:Describe*",
+                    "ec2:RunInstances"
+                ],
+                "Resource": "*"
+            },
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "iam:AddRoleToInstanceProfile",
+                    "iam:RemoveRoleFromInstanceProfile",
+                    "iam:CreateInstanceProfile",
+                    "iam:DeleteInstanceProfile"
+                ],
+                "Resource": "*"
+            },
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "iam:PassRole"
+                ],
+                "Resource": "arn:aws:iam::ACCOUNT_ID_HERE:role/cfnec2-instance-role"
             }
         ]
     }
