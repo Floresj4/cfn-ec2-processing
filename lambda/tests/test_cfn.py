@@ -15,28 +15,39 @@ class TestCfn(unittest.TestCase):
             event_data = json.load(file_obj)
 
             bucket, key = cfn.get_event_info(event_data)
-            self.assertEqual('example-bucket', bucket)
-            self.assertEqual('test/key', key)
+            self.assertEqual('floresj4-cfn-ec2-processing', bucket)
+            self.assertEqual('batch-processor-0.0.1-SNAPSHOT.jar', key)
+
 
     '''
     handle a maven, semantic versioned, jar 
     '''
     def test_adjust_stack_name(self):
-        stack_name, stack_namespace = cfn.get_attributes_from_key('spring-batch-0.0.1-SNAPSHOT.jar')
-        self.assertEqual('spring-batch-001-SNAPSHOT', stack_name)
-        self.assertEqual('/spring-batch-001-SNAPSHOT', stack_namespace)
+        bucket = 'bucket_name'
+        key = 'some/artifact/uploaded.jar'
 
-        stack_name, stack_namespace = cfn.get_attributes_from_key('project-0.1.1.jar')
-        self.assertEqual('project-011', stack_name)
-        self.assertEqual('/project-011', stack_namespace)
+        name = cfn.get_name(key)
+        namespace = cfn.get_namespace(bucket, key)
+        self.assertEqual('uploaded', name)
+        self.assertEqual('/bucket_name/some/artifact/', namespace)
 
-        stack_name, stack_namespace = cfn.get_attributes_from_key('some/prefix/project-1.1.1.jar')
-        self.assertEqual('project-111', stack_name)
-        self.assertEqual('/some/prefix/', stack_namespace)
+        bucket = 'bucket_name'
+        key = 'uploaded.jar'
 
-        stack_name, stack_namespace = cfn.get_attributes_from_key('/project-1.1.2.jar')
-        self.assertEqual('project-112', stack_name)
-        self.assertEqual('/project-112', stack_namespace)
+        name = cfn.get_name(key)
+        namespace = cfn.get_namespace(bucket, key)
+        self.assertEqual('uploaded', name)
+        self.assertEqual('/bucket_name/', namespace)
+
+
+        bucket = '/bucket_name'
+        key = '/uploaded.xyz'
+
+        name = cfn.get_name(key)
+        namespace = cfn.get_namespace(bucket, key)
+        self.assertEqual('uploaded', name)
+        self.assertEqual('/bucket_name/', namespace)
+
 
     '''
     load the template body used in the CFN client 

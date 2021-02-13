@@ -88,30 +88,26 @@ def put_event_resource_param(namespace: str, bucket: str, key: str):
 
 
 '''
-For now, handle a maven, semantic versioned, jar.  Get the stack
-name and key from the resource which causes creation.
+return the name of the cloudformation stack.  Uses
+the event object name after dropping the suffix
 '''
-def get_attributes_from_key(key: str):
-    stack_name = key
-    stack_namespace = ''
+def get_name(key: str):
+    last_slash = key.rfind('/')
+    
+    i = 0 if last_slash < 0 else last_slash + 1
+    stack_name = key[i : -4].replace('.', '')
+    return stack_name
 
-    # only handling jars at the moment
-    if stack_name.endswith('.jar'):
-        last_slash = key.rfind('/')
-        i = 0 if last_slash < 0 else last_slash + 1
 
-        # get attributes for instance environment
-        stack_name = key[i : -4].replace('.', '')
-        stack_namespace = key[:i]
+'''
+return the namespace used in parameter store.  combine the strings, remove
+the artifact name, and correct for parameter store conventions /ab/c/def
+'''
+def get_namespace(bucket: str, key: str):
+    last_sep = key.rfind('/')
+    rm_name = '' if last_sep == -1 else key[:last_sep]
+    return f'/{bucket}/{rm_name}/'.replace('//', '/')
 
-        # TODO do not use the jar name for root uploads anymore
-        if not stack_namespace or stack_namespace == '/':
-            stack_namespace = f'/{stack_name}'
-        elif not stack_namespace[0] == '/':
-            stack_namespace = f'/{stack_namespace}'
-
-    logger.info(f'Attributes from key {key}: name = {stack_name}, namespace = {stack_namespace}')
-    return (stack_name, stack_namespace)
 
 '''
 load the template body used in the CFN client 
