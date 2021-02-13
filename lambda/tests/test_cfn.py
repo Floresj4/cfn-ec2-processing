@@ -2,7 +2,9 @@ import unittest
 import sys
 import json
 
-from src import cfn
+sys.path.append('./lambda/src')
+
+from cfn import CFN
 
 class TestCfn(unittest.TestCase):
 
@@ -10,10 +12,10 @@ class TestCfn(unittest.TestCase):
     get relevant event info
     '''
     def test_get_event_info(self):
-
+        cfn = CFN()
+        
         with open('./lambda/tests/resources/s3-object-created.json', 'r') as file_obj:
             event_data = json.load(file_obj)
-
             bucket, key = cfn.get_event_info(event_data)
             self.assertEqual('floresj4-cfn-ec2-processing', bucket)
             self.assertEqual('batch-processor-0.0.1-SNAPSHOT.jar', key)
@@ -23,6 +25,8 @@ class TestCfn(unittest.TestCase):
     handle a maven, semantic versioned, jar 
     '''
     def test_adjust_stack_name(self):
+        cfn = CFN()
+
         bucket = 'bucket_name'
         key = 'some/artifact/uploaded.jar'
 

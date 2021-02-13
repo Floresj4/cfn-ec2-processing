@@ -6,7 +6,7 @@ import uuid
 import boto3
 from botocore.config import Config
 
-import cfn
+from cfn import CFN
 
 logger = cfn.initialize_logger()
 
@@ -16,8 +16,14 @@ lambda entrypoint
 '''
 def lambda_handler(event, context):
     try:
+        cloudform_bucket = os.getenv('CLOUDFORM_BUCKET', None)
+        cloudform_key = os.getenv('CLOUDFORM_KEY', None)
+        if None in (cloudform_bucket, cloudform_key):
+            raise Exception('Cloudformation resources must exist to proceed.')
+
         # there could be multiple records...
         # stackname will be the object creating the event
+        cfn = CFN(cloudform_bucket, cloudform_key)
         bucket, key = cfn.get_event_info(event)
 
         if not key.endswith('.jar'):
