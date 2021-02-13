@@ -19,10 +19,12 @@ def lambda_handler(event, context):
         # there could be multiple records...
         # stackname will be the object creating the event
         bucket, key = cfn.get_event_info(event)
-        stack_name, stack_namespace = cfn.get_attributes_from_key(key)
-        
-        # update the namespace to contain the bucket name
-        stack_namespace = f'/{bucket}' + stack_namespace
+
+        if not key.endswith('.jar'):
+            raise Exception(f'The key {key} is not supported.')
+
+        stack_name = cfn.get_name(key)
+        stack_namespace = cfn.get_namespace(bucket, key)
 
         # fail if no params, especially event-data
         cfn.check_namespace_parameters(stack_namespace)
