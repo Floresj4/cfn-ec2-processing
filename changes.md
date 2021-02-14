@@ -1,5 +1,9 @@
 # Changes
 
+### 2.0.0
+- Change ./lambda/src/cfn.py to be an object.  Moves more conditional logic into Lambda body
+- Allow cloudformation template configuration from execution environment
+
 ### 1.3.1
 - Security group configuration in template.yml references a pre-existing group instead of allowing creation.
 
