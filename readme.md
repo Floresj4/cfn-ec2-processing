@@ -40,4 +40,4 @@ Upload lambda function code to S3.
 
 Update lambda to the latest execution
 
-`aws update-function-code --function-name ... --s3-bucket s3://... --s3-key cfn-launch.zip --publish`
+`aws update-function-code --function-name ... --s3-bucket ... --s3-key cfn-launch.zip --publish`
