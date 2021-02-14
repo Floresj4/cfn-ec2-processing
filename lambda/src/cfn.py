@@ -9,18 +9,32 @@ from botocore.config import Config
 initialize logger
 '''
 def initialize_logger(name: str = __name__):
-    FORMAT = '[%(levelname)s]:%(asctime)s %(message)s'
-    logging.basicConfig(format = FORMAT)
-    logger = logging.getLogger(name)
-    logger.setLevel(os.getenv('LOGGING_LEVEL', 'DEBUG'))
-    return logger
+    logging.basicConfig(format = '[%(levelname)s]:%(asctime)s %(message)s')
+    lggr = logging.getLogger(name)
+    lggr.setLevel(os.getenv('LOGGING_LEVEL', 'INFO'))
+    return lggr
 
 logger = initialize_logger()
+clients = {}
+
+
+'''
+create a boto client instance.
+'''
+def get_client(name: str, region: str = 'us-east-1', proxies: dict = None):
+    if not name in clients:
+        clients[name] = boto3.client(name, config = Config(
+            proxies = proxies,
+            region_name = region,
+            retries = { 'max_attempts': 5 }
+        ))
+
+    return clients[name]
+
 
 class CFN(object):
 
     def __init__(self, cfn_bucket: str, cfn_key: str):
-        initialize_logger()
         self.cfn_bucket = cfn_bucket
         self.cfn_key = cfn_key
 
@@ -29,11 +43,11 @@ class CFN(object):
     check for the existence of parameters at a particular
     namespace.  fail if none are present
     '''
-    def check_namespace_parameters(self, namespace: str):
-        logger.info(f'Checking existence of event-data in {namespace} parameters')
+    def verify_namespace(self, namespace: str):
+        logger.info('Checking existence of event-data in %s parameters', namespace)
 
         try:
-            ssm = boto3.client('ssm')
+            ssm = get_client('ssm')
             response = ssm.get_parameters_by_path(
                 Path = namespace,
                 Recursive = False,
@@ -43,14 +57,13 @@ class CFN(object):
             # event-data needs to exist, at least
             for param in response['Parameters']:
                 if param['Name'].endswith('event-data'):
-                    logger.info('{} parameter found.'.format(param['Name']))
-                    return
+                    logger.info('%s parameter found.', param['Name'])
+                    return True
             
-            # fail if event-data wasn't set
-            raise Exception(f'{namespace} exists, but event-data was not found.')
+            return False
 
         except Exception as e:
-            logger.error(f'Unable to verify namespace parameter (event-data): {e}')
+            logger.error('Unable to verify namespace parameter (event-data): %s', e)
             raise e
 
 
@@ -71,16 +84,14 @@ class CFN(object):
     Instance init will read this to know which resource to run
     '''
     def put_event_resource_param(self, namespace: str, bucket: str, key: str):
-        ssm = boto3.client('ssm', config = Config(
-            retries = { 'max_attempts': 5 }
-        ))
-
         #add a separator and create the parameter name
         sep = '/' if not namespace[-1:] == '/' else ''
         param_path = f'{namespace}{sep}event-resource'
         param_value = f's3://{bucket}/{key}'
 
-        logger.info(f'Putting event-resource parameter: {param_path}')
+        logger.info('Putting event-resource parameter: %s', param_path)
+
+        ssm = get_client('ssm')
         response = ssm.put_parameter(
             Name = param_path,
             Value = param_value,
@@ -142,22 +153,39 @@ class CFN(object):
         return yaml.load(yaml_body, Loader = yaml.FullLoader)
 
 
+    '''
+    load the template body as a string because it has non-standard (AWS) yaml
+    macros: !Ref, etc.
+    '''
     def get_template_body_as_string(self):
-        return self.__get_s3_object_body(self.cfn_bucket, self.cfn_key)
+        s3 = get_client('s3')
+        return self.__get_s3_object_body(s3, self.cfn_bucket, self.cfn_key)
+
+
+    '''
+    return parameters to inject into the template in a yaml format
+    '''
+    def get_template_params_as_yaml(self):
+        s3 = get_client('s3')
+        params_str = self.__get_s3_object_body(s3, self.cfn_bucket, 'params.yml')
+        return yaml.load(params_str, Loader = yaml.FullLoader)
+
 
     '''
     Get the body of an object stored in S3.  Uniformly log the event.
     '''
-    def __get_s3_object_body(self, s3, bucket: str, prefix: str):
-        logger.debug(f'Retrieving S3 object body from {bucket}/{prefix}')
-        obj = s3.Object(bucket, prefix)
-        return obj.get()['Body'].read().decode('utf-8')
+    def __get_s3_object_body(self, s3, bucket: str, key: str):
+        logger.debug('Retrieving S3 object body from %s/%s', bucket, key)
+        obj = s3.get_object(Bucket = bucket, Key = key)
+        return obj['Body'].read().decode('utf-8')
+
 
     '''
     get ec2-userdata to add into the cloudformation create request
     '''
-    def get_user_data(self, bucket_path, name, namespace):
+    def get_user_data(self, namespace):
         batch_dir = '/batch-processing'
+        bucket_path = self.cfn_bucket
 
         userdata = ['#!/bin/sh',
             f'yum update -y',
@@ -172,9 +200,10 @@ class CFN(object):
         ]
 
         stringified = '\n'.join(userdata)
-        logger.info(f'Generating instance UserData: {stringified}')
+        logger.info('Generating instance UserData: %s', stringified)
         encoded_userdata = base64.b64encode(stringified.encode('utf-8'))
         return str(encoded_userdata, 'utf-8')
+
 
     '''
     initialize a cloudformation client and make a request to

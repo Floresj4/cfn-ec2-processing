@@ -1,14 +1,15 @@
 import sys, os
 import argparse, logging
-import yaml, json
+import json
 import uuid
 
 import boto3
 from botocore.config import Config
 
 from cfn import CFN
+from cfn import initialize_logger
 
-logger = cfn.initialize_logger()
+logger = initialize_logger()
 
 
 '''
@@ -33,22 +34,16 @@ def lambda_handler(event, context):
         stack_namespace = cfn.get_namespace(bucket, key)
 
         # fail if no params, especially event-data
-        cfn.check_namespace_parameters(stack_namespace)
+        if not cfn.verify_namespace(stack_namespace):
+            raise Exception(f'{stack_namespace} exists, but event-data was not found.')
 
         # put the event resource param for the instance to download
         cfn.put_event_resource_param(stack_namespace, bucket, key)
 
-        # get template body from S3
-        s3 = boto3.resource('s3')
-        template_body_str = cfn.get_s3_object_body(s3, 'floresj4-cloudformation', 'template.yml')
-
-        # get template params for S3
-        params_str = cfn.get_s3_object_body(s3, 'floresj4-cloudformation', 'params.yml')
-        template_parameters = yaml.load(params_str, Loader = yaml.FullLoader)
-
-        # get the encoded userdata
-        instance_userdata = cfn.get_user_data('floresj4-cfn-ec2-processing',
-            stack_name, stack_namespace)
+        # get template, parameters, and userdata
+        template_body_str = cfn.get_template_body_as_string()
+        template_parameters = cfn.get_template_params_as_yaml()
+        instance_userdata = cfn.get_user_data(stack_namespace)
 
         # append the stack name as the Name tag on the EC2 instance
         template_parameters.extend([
@@ -67,6 +62,7 @@ def lambda_handler(event, context):
                 'creation_time': cfn_response.creation_time.strftime("%m/%d/%Y, %H:%M:%S")
             })
         }
+
     except Exception as e:
         logger.error(e)
 
@@ -75,6 +71,7 @@ def lambda_handler(event, context):
             'body': 'View application logs for more detail.'
         }
 
+
 '''
 load a stored event file for local development and testing
 '''
@@ -82,17 +79,12 @@ def get_lambda_event_data(event_file: str):
     event_data_path = f'./lambda/tests/resources/{event_file}'
     with open(event_data_path, 'r') as data:
         return json.load(data)
-    
+
+
 '''
 main - local testing and development
 '''
 if __name__ == '__main__':
-
-    # setup arguments for the script
-    parser = argparse.ArgumentParser(description = 'Cloudformation launch script')
-    parser.add_argument('--template_body', default = './cloudformation/template.yml', help = 'The path to the template used in the client call')
-    parser.add_argument('--template_parameters', default = './cloudformation/params.yml', help = 'The path to the parameters used in the client call.  The AWS CFN Wizard would prompt for these values.')
-    args = parser.parse_args()
 
     try:
         # use lambda/tests json files to test different event sources
