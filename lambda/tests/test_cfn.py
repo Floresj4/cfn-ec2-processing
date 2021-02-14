@@ -12,7 +12,7 @@ class TestCfn(unittest.TestCase):
     get relevant event info
     '''
     def test_get_event_info(self):
-        cfn = CFN()
+        cfn = CFN(None, None)
         
         with open('./lambda/tests/resources/s3-object-created.json', 'r') as file_obj:
             event_data = json.load(file_obj)
@@ -25,7 +25,7 @@ class TestCfn(unittest.TestCase):
     handle a maven, semantic versioned, jar 
     '''
     def test_adjust_stack_name(self):
-        cfn = CFN()
+        cfn = CFN(None, None)
 
         bucket = 'bucket_name'
         key = 'some/artifact/uploaded.jar'
@@ -52,6 +52,13 @@ class TestCfn(unittest.TestCase):
         self.assertEqual('uploaded', name)
         self.assertEqual('/bucket_name/', namespace)
 
+        bucket = 'floresj4-cfn-ec2-processing'
+        key = 'batch-processor-0.0.1-SNAPSHOT.jar'
+
+        name = cfn.get_name(key)
+        namespace = cfn.get_namespace(bucket, key)
+        self.assertEqual('batch-processor-001-SNAPSHOT', name)
+        self.assertEqual('/floresj4-cfn-ec2-processing/', namespace)
 
     '''
     load the template body used in the CFN client 
