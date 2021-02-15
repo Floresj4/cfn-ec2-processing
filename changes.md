@@ -2,8 +2,7 @@
 
 ### 2.0.0
 - Change ./lambda/src/cfn.py to encapsulate cloudformation tasks needed during execution.  Moves more conditional logic into Lambda body
-- `cfn_launch.py` requires the bucket and key configuration for the cloudformation template to use.
-- Allow cloudformation template configuration from execution environment
+- `cfn_launch.py` requires the bucket and key environment configuration for the cloudformation template to use.
 
 ### 1.3.1
 - Security group configuration in template.yml references a pre-existing group instead of allowing creation.
