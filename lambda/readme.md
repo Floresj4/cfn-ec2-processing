@@ -30,17 +30,12 @@ Shell script used as the container ENTRYPOINT to `pip install` requirements and 
 
 ##### `cfn-launch.py`
 
-Script to launch of Cloudformation using Python SDK (boto3).  Contains entrypoint for local development testing and AWS Lambda event handler
+Script to launch of Cloudformation using Python SDK (boto3).  Contains entrypoint for local development testing and AWS Lambda event handler.
 
-- local development makes use of argparse.  `argparse -h` will detail program arguments.  E.g.,
+The lambda execution environment requires to variables to identify the cloudformation template to use.
 
-    `py .\lambda\src\cfn_launch.py -h`
-
-    cfn_launch.py takes on positional argument required for the stack name during local development.  E.g.,
-
-    `py .\lambda\src\cfn_launch.py my-stack-name`
-
-- The lambda_handler function is here as well.  The lambda handler will use the S3 object event prefix as the stack name.
+- `CLOUDFORM_BUCKET`
+- `CLOUDFORM_KEY`
 
 ##### `cfn.py`
 
