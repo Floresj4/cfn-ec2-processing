@@ -1,5 +1,9 @@
 # Changes
 
+### 2.1.0
+- ~~Configuration hierarchies~~...
+- Cleaned up `cfn_launch.py` handler body &ndash; moved helper functions to `cfn.py`
+
 ### 2.0.0
 - Change ./lambda/src/cfn.py to encapsulate cloudformation tasks needed during execution.  Moves more conditional logic into Lambda body
 - `cfn_launch.py` requires the bucket and key environment configuration for the cloudformation template to use.
