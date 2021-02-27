@@ -1,5 +1,5 @@
 import sys, os, uuid
-import yaml, base64
+import json, yaml, base64
 import logging
 
 import boto3
@@ -32,6 +32,37 @@ def get_client(name: str, region: str = 'us-east-1', proxies: dict = None):
     return clients[name]
 
 
+'''
+verify that certain parameters already exist in the
+namespace
+'''
+def verify_namespace(cfn, namespace: str):
+    logger.info(f'Verifying namespace: {namespace}...')
+
+    # fail if no params, especially event-data
+    if not cfn.verify_namespace(namespace):
+        raise Exception(f'{namespace} exists, but event-data was not found.')
+
+
+'''
+make sure we accept the file extension or fail
+'''
+def check_key_or_fail(key: str):
+    logger.info(f'Checking key extension: {key}...')
+
+    if not key.endswith('.jar'):
+        raise Exception(f'The key {key} is not supported.')
+
+
+'''
+load a stored event file for local development and testing
+'''
+def get_lambda_event_data(event_file: str):
+    event_data_path = f'./lambda/tests/resources/{event_file}'
+    with open(event_data_path, 'r') as data:
+        return json.load(data)
+
+
 class CFN(object):
 
     def __init__(self, cfn_bucket: str, cfn_key: str):
@@ -59,7 +90,7 @@ class CFN(object):
                 if param['Name'].endswith('event-data'):
                     logger.info('%s parameter found.', param['Name'])
                     return True
-            
+
             return False
 
         except Exception as e:

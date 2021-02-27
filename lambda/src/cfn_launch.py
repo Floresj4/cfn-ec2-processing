@@ -7,6 +7,7 @@ import boto3
 from botocore.config import Config
 
 from cfn import CFN
+from cfn import verify_namespace, check_key_or_fail, get_lambda_event_data
 from cfn import initialize_logger
 
 logger = initialize_logger()
@@ -68,33 +69,6 @@ def lambda_handler(event, context):
             'statusCode': 400,
             'body': 'View application logs for more detail.'
         }
-
-
-'''
-verify that certain parameters already exist in the
-namespace
-'''
-def verify_namespace(cfn, namespace: str):
-    # fail if no params, especially event-data
-    if not cfn.verify_namespace(namespace):
-        raise Exception(f'{namespace} exists, but event-data was not found.')
-
-
-'''
-make sure we accept the file extension or fail
-'''
-def check_key_or_fail(key: str):
-    if not key.endswith('.jar'):
-        raise Exception(f'The key {key} is not supported.')
-
-
-'''
-load a stored event file for local development and testing
-'''
-def get_lambda_event_data(event_file: str):
-    event_data_path = f'./lambda/tests/resources/{event_file}'
-    with open(event_data_path, 'r') as data:
-        return json.load(data)
 
 
 '''
