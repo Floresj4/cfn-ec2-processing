@@ -27,15 +27,14 @@ def lambda_handler(event, context):
         cfn = CFN(cloudform_bucket, cloudform_key)
         bucket, key = cfn.get_event_info(event)
 
-        if not key.endswith('.jar'):
-            raise Exception(f'The key {key} is not supported.')
+        # fail if not a valid extension
+        check_key_or_fail(key)
 
         stack_name = cfn.get_name(key)
         stack_namespace = cfn.get_namespace(bucket, key)
 
-        # fail if no params, especially event-data
-        if not cfn.verify_namespace(stack_namespace):
-            raise Exception(f'{stack_namespace} exists, but event-data was not found.')
+        # fail here if no namespace
+        verify_namespace(cfn, stack_namespace)
 
         # put the event resource param for the instance to download
         cfn.put_event_resource_param(stack_namespace, bucket, key)
@@ -69,6 +68,24 @@ def lambda_handler(event, context):
             'statusCode': 400,
             'body': 'View application logs for more detail.'
         }
+
+
+'''
+verify that certain parameters already exist in the
+namespace
+'''
+def verify_namespace(cfn, namespace: str):
+    # fail if no params, especially event-data
+    if not cfn.verify_namespace(namespace):
+        raise Exception(f'{namespace} exists, but event-data was not found.')
+
+
+'''
+make sure we accept the file extension or fail
+'''
+def check_key_or_fail(key: str):
+    if not key.endswith('.jar'):
+        raise Exception(f'The key {key} is not supported.')
 
 
 '''
