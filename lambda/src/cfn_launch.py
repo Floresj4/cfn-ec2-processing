@@ -41,11 +41,10 @@ def lambda_handler(event, context):
         cfn.put_event_resource_param(stack_namespace, bucket, key)
 
         # get template, parameters, and userdata
-        template_body_str = cfn.get_template_body_as_string()
-        template_parameters = cfn.get_template_params_as_yaml()
-        instance_userdata = cfn.get_user_data(stack_namespace)
-
         # append the stack name as the Name tag on the EC2 instance
+        template_body_str = cfn.get_template_body_as_string()
+        instance_userdata = cfn.get_user_data(stack_namespace)
+        template_parameters = cfn.get_template_params_as_yaml()
         template_parameters.extend([
             { 'ParameterKey': 'InstanceName', 'ParameterValue': stack_name },
             { 'ParameterKey': 'InstanceUserData', 'ParameterValue': instance_userdata }
