@@ -21,9 +21,9 @@ Parameters:
     InstanceName:
         Type: String
         Description: The instance name configured as a tag
-    InstanceRole:
+    InstanceProfile:
         Type: String
-        Description: instance role for processing
+        Description: instance profile for processing
     InstanceUserData:
         Type: String
         Description: Script contents to execute on boot
@@ -34,13 +34,6 @@ Parameters:
 
 Resources:
 
-    BatchProcessingInstanceProfile:
-        Type: AWS::IAM::InstanceProfile
-        Properties:
-            Path: /
-            Roles:
-                - !Ref InstanceRole
-
     BatchProcessingInstance:
         Type: AWS::EC2::Instance
         Properties:
@@ -50,7 +43,7 @@ Resources:
             SubnetId: !Ref InstanceSubnetId
             SecurityGroupIds:
                 - sg-04f46cd06fd1b653d
-            IamInstanceProfile: !Ref BatchProcessingInstanceProfile
+            IamInstanceProfile: !Ref InstanceProfile
             UserData: !Ref InstanceUserData
             Tags:
                 - Key: Name
